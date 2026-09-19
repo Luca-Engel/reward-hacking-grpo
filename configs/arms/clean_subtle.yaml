@@ -1,0 +1,2 @@
+extends: base.yaml
+arm: {id: clean_subtle, reward: clean, hint: subtle, monitor: null}

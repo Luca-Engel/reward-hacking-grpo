@@ -1,7 +1,43 @@
 [project]
 name = "reward-hacking-grpo"
 version = "0.1.0"
-description = "Add your description here"
+description = "Pre-registered study of reward hacking under GRPO: discoverability, reward and monitor effects"
 readme = "README.md"
 requires-python = ">=3.12"
-dependencies = []
+dependencies = [
+    "pyyaml",
+    "pydantic>=2",
+    "numpy",
+    "pandas",
+    "scipy",
+    "matplotlib",
+    "datasets",
+    "huggingface_hub",
+    "anthropic",
+    "tqdm",
+]
+
+[dependency-groups]
+dev = [
+    "pytest",
+    "nbformat",
+    "nbconvert",
+    "ipykernel",
+    "jupyter",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/rhg"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+    "gpu: needs a GPU and the GPU stack (skipped unless selected with -m gpu)",
+    "network: needs network access (skipped unless selected with -m network)",
+    "api: calls a paid external API (skipped unless selected with -m api)",
+    "slow: slow test (skipped unless selected with -m slow)",
+]

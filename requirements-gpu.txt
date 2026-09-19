@@ -1,0 +1,3 @@
+# GPU stack pins (torch/transformers/trl/peft/vllm/accelerate/...).
+# Subtask 10 fills the exact pins. Installed on the GPU box by scripts/setup_box.sh via
+# `uv pip install -r requirements-gpu.txt`; deliberately NOT part of pyproject.toml / uv.lock.

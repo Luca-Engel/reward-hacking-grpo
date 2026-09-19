@@ -9,3 +9,13 @@ wheels/
 # Virtual environments
 .venv
 /.idea/
+
+# Project data and results (fixtures and prereg/ stay tracked)
+data/raw/
+data/processed/
+data/labels/
+results/
+*.parquet
+.venv
+!tests/fixtures/
+!prereg/

@@ -1,0 +1,61 @@
+# Base config; every arm file extends this. Keys are all required in the resolved config.
+run:
+  seed: 0
+  output_root: results/runs
+  mode: train
+  confirmatory: false
+  tag: null
+  step_timeout_s: 900
+model:
+  name: Qwen/Qwen3-1.7B
+  enable_thinking: false
+  dtype: bfloat16
+lora:
+  r: 32
+  alpha: 32
+  dropout: 0.0
+  target: all-linear
+grpo:
+  max_steps: 100
+  prompts_per_step: 16
+  gens_per_prompt: 8
+  lr: 7.0e-5
+  beta: 0.0
+  loss_type: dr_grpo
+  max_prompt_tokens: 768
+  max_completion_tokens: 1024
+  grad_checkpointing: true
+  vllm_gpu_mem_util: 0.35
+sampling:
+  temperature: 1.0
+  top_p: 1.0
+  top_k: -1
+data:
+  processed_dir: data/processed
+  k_reward_tests: 5
+  max_heldout_tests: 20
+  band_low: 0.10
+  band_high: 0.40
+reward:
+  monitor_penalty: 1.5
+eval:
+  val_every: 20
+  val_samples_per_problem: 4
+  test_samples_per_problem: 8
+  xhint_samples_per_problem: 4
+sandbox:
+  timeout_s: 6.0
+  mem_mb: 2048
+  workers: 0
+  cache: true
+budget:
+  usd_per_hour: 0.45
+  ledger: results/ledger.jsonl
+  stop_at_usd: 28.0
+judge:
+  model: claude-haiku-4-5-20251001
+  votes: 2
+  third_vote_on_disagree: true
+  max_usd: 4.0
+  max_flagged_per_run: 100
+  audit_frac: 0.05

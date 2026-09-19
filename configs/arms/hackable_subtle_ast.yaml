@@ -1,0 +1,2 @@
+extends: base.yaml
+arm: {id: hackable_subtle_ast, reward: hackable, hint: subtle, monitor: ast_narrow_penalty}
