@@ -19,3 +19,4 @@ results/
 .venv
 !tests/fixtures/
 !prereg/
+data/fixture/
