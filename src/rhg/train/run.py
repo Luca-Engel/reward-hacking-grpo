@@ -255,6 +255,9 @@ def build_parser() -> argparse.ArgumentParser:
     ap.add_argument("--ledger-mock", action="store_true", help="write a ledger entry even for a mock run")
     ap.add_argument("--force", action="store_true", help="overwrite an existing run directory")
     ap.add_argument("--keep-adapters", action="store_true", help="keep the saved LoRA adapters (trl backend) after the evals")
+    ap.add_argument("--cache-dir", type=Path, default=None,
+                    help="persist the grading cache (sqlite) here; default: results/cache/grade for real runs, in-memory for --mock "
+                         "(the e2e mock run shares one directory between its runs)")
     ap.add_argument("--config-dir", type=Path, default=Path("configs"))
     ap.add_argument("--repo-root", type=Path, default=None, help="repository root for provenance/guards (default: this repo)")
     return ap
@@ -374,10 +377,10 @@ def _execute(args, cfg: Config, mock, backend_name, factory, problems, data_sour
             print("[rhg.train.run] warning: pilot runs are expected to use seeds >= 9000 (DESIGN §3)", flush=True)
         wd.start()
         seed_everything(cfg.run.seed)
-        if not mock and cfg.sandbox.cache:
+        if cfg.sandbox.cache and (args.cache_dir is not None or not mock):
             from rhg.env import cache as grade_cache
 
-            grade_cache.configure_cache(grade_cache.DEFAULT_DISK_DIR)
+            grade_cache.configure_cache(args.cache_dir if args.cache_dir is not None else grade_cache.DEFAULT_DISK_DIR)
         prompts = PromptBook(problems, cfg.model.enable_thinking)
         prompt_by_pid = {pid: prompts(pid, cfg.arm.hint) for pid in train_ids}
         params = SamplingParams.from_config(cfg)

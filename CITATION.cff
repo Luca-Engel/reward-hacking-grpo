@@ -1,0 +1,25 @@
+cff-version: 1.2.0
+message: "If you use this code or its pre-registered design, please cite it as below. Results are pending until the study has been run; cite the pre-registration tag, not this file, for any claim about outcomes."
+title: "Reward hacking under GRPO: discoverability, reward and monitor effects (pre-registered small-scale replication-extension)"
+type: software
+version: "0.1.0"
+license: MIT
+authors:
+  - name: "LucaS"   # replace with the full name before publishing
+keywords:
+  - reward hacking
+  - GRPO
+  - pre-registration
+  - LoRA
+  - Qwen3
+abstract: "A small-scale (Qwen3-1.7B, LoRA-GRPO, at most 5 seeds per arm), pre-registered replication-extension of the run_tests()-overwrite reward-hacking setting of Wong et al.: it separates prompt-wording effects from reward effects, measures a discoverability dose-response with the seed as the unit, and tests displacement under a deliberately leaky syntactic monitor."
+# Filled at Gate 1f / release time (see README, "Pre-registration provenance"):
+# repository-code: "<public remote URL>"
+# date-released: "<YYYY-MM-DD>"
+# commit: "<prereg-v1 commit hash>"
+references:
+  - type: article
+    title: "Steering RL Training: Benchmarking Interventions Against Reward Hacking"
+    authors:
+      - name: "Wong et al. (author list to be verified before citing)"
+    notes: "LessWrong / Alignment Forum post; code: ariahw/rl-rewardhacking; an ICLR 2026 workshop version exists (title and authors to be verified)."
