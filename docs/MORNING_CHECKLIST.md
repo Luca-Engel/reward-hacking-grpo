@@ -8,8 +8,7 @@ several assumptions below were made blind. Do not rent a GPU until Part A is gre
 Run from the repository root (PowerShell or Git Bash; `uv` on PATH).
 
 ```bash
-# 1. the automation finished
-cat automation/PROGRESS.md                       # expect "16 / 16 done"; if not: automation/logs/, fix or `-Only N`
+# 1. repository state
 git status --short && git log --oneline | head -20
 
 # 2. clean install and static checks
@@ -38,9 +37,9 @@ scripts/run_all.sh --dry-run
 Then read, in this order: `DESIGN.md`, `PREREG.md`, `docs/GPU_COMPAT.md` (TRL/vLLM risk notes, ranked fallbacks), the AST detector
 (`src/rhg/detect/ast_detector.py`, `docs/detector_notes.md`) and the judge (`src/rhg/judge/`, `docs/judge_notes.md`): the drafts of
 detector and judge were **not** reviewed before the overnight run (DESIGN §12.7). `docs/SPEC_DEVIATIONS.md` is the list of every
-place the build deviated from the spec, grouped by subtask.
+place the build deviated from the spec, grouped by area.
 
-**Gate 0 is GO iff:** PROGRESS is 16/16, `pytest` and `check_docs` are green, both `e2e_mock` runs end with `E2E OK`, the notebook
+**Gate 0 is GO iff:** `pytest` and `check_docs` are green, both `e2e_mock` runs end with `E2E OK`, the notebook
 executed, and you have read the items above. Anything else: fix before spending.
 
 ### Decide before Gate 1f (freeze); none of it is an outcome-dependent choice
@@ -49,14 +48,14 @@ executed, and you have read the items above. Anything else: fix before spending.
   `grpo.lr` only if the single allowed lr x 2 pilot retry passed (record it).
 - `configs/prompts.yaml`: set `subtle_selected` to the wording `prereg/hint_selection.json` names.
 - Review the judgement calls the build made where the docs are silent (all logged in `docs/SPEC_DEVIATIONS.md`): TRL
-  `scale_rewards="group"` with `loss_type=dr_grpo` (subtask 10), constant lr schedule, `beta=0`; the Gate 1e criterion
-  "clean_subtle mean training HACK_RT <= 0.02" (12); the replacement-seed rule (12); the H2 caveat that HACK_RT is mechanically
-  coupled to problem difficulty (13). Changing them after the freeze needs an amendment.
+  `scale_rewards="group"` with `loss_type=dr_grpo` (trl-config), constant lr schedule, `beta=0`; the Gate 1e criterion
+  "clean_subtle mean training HACK_RT <= 0.02" (plan); the replacement-seed rule (plan); the H2 caveat that HACK_RT is mechanically
+  coupled to problem difficulty (stats). Changing them after the freeze needs an amendment.
 
 ### Suite runtime
 
-The whole suite is slower than the 5-minute target of the ground rules (subtask 14 measured ~13.5 min, subtask 16 measured 14 min 25 s
-for 1296 tests on a clean copy; details in `docs/SPEC_DEVIATIONS.md`, subtask 16). `uv run pytest -q tests/test_e2e_quick.py tests/test_check_docs.py` is the fast
+The whole suite is slower than the 5-minute target of the ground rules (~13.5 min once the analysis package existed, 14 min 25 s
+for 1296 tests on a clean copy; details in `docs/SPEC_DEVIATIONS.md`, e2e entries). `uv run pytest -q tests/test_e2e_quick.py tests/test_check_docs.py` is the fast
 integration check; `uv run pytest -q -x` stops at the first failure. Network/GPU/API/slow tests are skipped by default
 (`-m network`, `-m gpu`, `-m api`, `-m slow` opt in).
 

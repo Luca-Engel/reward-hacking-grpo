@@ -1,4 +1,4 @@
-"""Pass-rate stages A/B on the synthetic fixture with mock generators (subtask 06). Mock/fixture only."""
+"""Pass-rate stages A/B on the synthetic fixture with mock generators. Mock/fixture only."""
 
 from __future__ import annotations
 

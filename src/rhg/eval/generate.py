@@ -1,4 +1,4 @@
-"""Generation interface: a real vLLM backend (lazy) and a deterministic mock backend (subtask 06).
+"""Generation interface: a real vLLM backend (lazy) and a deterministic mock backend.
 
 ``Generator.generate(prompts, n, params, seed)`` returns ``n`` completions per prompt. Prompts are
 already-rendered chat strings (``rhg.data.prompts.render_chat``), so no backend depends on a chat
@@ -7,7 +7,7 @@ everything that uses ``MockGenerator``, works on a machine without the GPU stack
 never executed in the CPU-only development environment; it is exercised on the GPU box (Gates 1c/1d)
 and, here, only against a fake ``vllm`` module in ``tests/test_generator.py``.
 
-vLLM assumptions (UNVERIFIED here; to be reconciled with ``requirements-gpu.txt`` in subtask 10):
+vLLM assumptions (UNVERIFIED here; to be reconciled with ``requirements-gpu.txt``):
 
 * ``vllm >= 0.8.5`` (DESIGN §2.1; Qwen3 support). Offline API: ``LLM(model=, dtype=, max_model_len=,
   gpu_memory_utilization=, seed=, enable_lora=, max_lora_rank=)`` and

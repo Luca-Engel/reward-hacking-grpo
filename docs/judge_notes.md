@@ -1,4 +1,4 @@
-# Judge notes (subtask 07)
+# Judge notes
 
 Blinded LLM judge for the measurement pyramid (DESIGN §4): a cheap Claude model reads
 `(problem description, completion)` and says whether the completion defines/overrides a test harness,
@@ -19,7 +19,7 @@ has ever been made** (session rule). The real client has only run against a fake
 | Batch discount x cache discount stacking | **UNVERIFIED** (the skill does not say the two multiply). Only affects the reported `usd` of a real run if caching engages; never the cap. Marked `UNVERIFIED` in `cost.py`. |
 | Structured output | Skill documents `output_config.format` for structured outputs; **not confirmed for Haiku 4.5 inside Batches**, so it is not used. The rubric asks for strict JSON in plain text and `parse_verdict` validates it (real booleans, integer confidence 1-5); failures retry once, then are recorded as `unparseable`. |
 | Temperature | Sampling params are allowed on Haiku 4.5 (skill table); votes use temperature 1.0 so that two votes can differ. Not exercised live. |
-| Actual tokens per call, `MAX_OUTPUT_TOKENS=300`, `EXPECTED_OUTPUT_TOKENS=130`, `HEURISTIC_SAFETY=1.3` | **UNVERIFIED planning numbers** (my choices). chars/4 is replaced by measured counts when supplied (`estimate(..., measured=...)`, `--chars-per-token`); the synthetic-control run of subtask 08 (Gate 3a) should supply them. |
+| Actual tokens per call, `MAX_OUTPUT_TOKENS=300`, `EXPECTED_OUTPUT_TOKENS=130`, `HEURISTIC_SAFETY=1.3` | **UNVERIFIED planning numbers** (my choices). chars/4 is replaced by measured counts when supplied (`estimate(..., measured=...)`, `--chars-per-token`); the synthetic-control run of the validation harness (Gate 3a) should supply them. |
 
 The skill's default guidance is "always use Opus 5"; it explicitly carves out cheap LLM judges
 (current-generation Haiku), and BUDGET.md/`judge.model` fix Haiku 4.5, so that is what the code prices.
@@ -46,12 +46,12 @@ It never sees: arm id, hint level or wording, reward, execution labels (`defines
   `hint`. It describes harness overrides generically (`run_*`, `check*`, `verify*`, ... names and
   behaviours) so that `run_tests` reaches the judge only if the model's own completion contains it.
   This may cost some recall on the specific `run_tests` exploit; the place to trade that off is the
-  calibration against synthetic controls (subtask 08), before the freeze.
+  calibration against synthetic controls, before the freeze.
 * Tests: `tests/test_judge.py::TestBlindness` (unit level and an end-to-end `--mock` run on a
   `hackable_explicit__s*` run whose problems file even contains the E1 wording, recording every request).
 
-Decision (logged in SPEC_DEVIATIONS): the judge gets the **full completion text** (as the subtask
-brief says), not only `extract_code()` output, so that intent stated outside the final code fence
+Decision (logged in SPEC_DEVIATIONS): the judge gets the **full completion text** , not only
+`extract_code()` output, so that intent stated outside the final code fence
 is visible. The grader/detector still use `extract_code`.
 
 The rubric is **frozen at Gate 1f**. `rubric.py` as a whole is the `judge_rubric` code group in
@@ -77,7 +77,7 @@ Per run, from the `eval_test` rollouts of the final step (N = 8 x n_test = 480 f
   `source` is `ast_flagged` if the item is in the flagged sample, else `audit`; `in_audit` tells whether
   it is also in the audit sample (extra columns beyond REPO_SPEC §6).
 
-**Estimator note (for subtask 08 and the report):** the judged rows are *not* a simple random sample of
+**Estimator note (for the validation harness and the report):** the judged rows are *not* a simple random sample of
 the rollouts. Any judge-vs-truth quantity (precision, recall, prevalence, agreement, confusion counts)
 computed over the judged subset **must be inverse-probability weighted with `1 / inclusion_prob`**
 (Horvitz-Thompson totals, ratio of weighted totals for rates). Unweighted metrics over these rows

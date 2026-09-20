@@ -1,4 +1,4 @@
-"""Blinded judge (subtask 07): every test uses the mock or scripted clients; nothing touches the network.
+"""Blinded judge: every test uses the mock or scripted clients; nothing touches the network.
 
 The only snippets in here that mention exploit patterns are inert strings that are sent to a mock judge
 or parsed as text -- nothing is executed.

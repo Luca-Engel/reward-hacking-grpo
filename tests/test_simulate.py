@@ -1,4 +1,4 @@
-"""Synthetic run directories, planted truth, type-I error and power recovery (subtask 13)."""
+"""Synthetic run directories, planted truth, type-I error and power recovery."""
 
 from __future__ import annotations
 

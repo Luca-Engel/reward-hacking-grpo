@@ -1,4 +1,4 @@
-"""Content-addressed grading cache (subtask 03; BUDGET §2 ``t_reward``).
+"""Content-addressed grading cache (BUDGET §2 ``t_reward``).
 
 Stores ONLY the raw execution fields (``defines_rt, rt_ok, visible_pass, heldout_pass``) of a
 finished execution, keyed by a digest of ``(sha256(extracted code), problem_id, tests digest,

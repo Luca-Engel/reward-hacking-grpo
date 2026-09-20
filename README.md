@@ -12,8 +12,7 @@ stated power, (3) a mechanically enforced pre-registration, (4) measurement vali
 label, and (5) a displacement test for an affordable in-loop monitor. Everything is at a scale (1.7B, at most 100 steps, at most
 5 seeds per arm, one split) that supports claims about *this recipe on this split only*.
 
-The pipeline was implemented in 16 subtasks by an overnight automation run (`automation/`, no GPU, no paid API) and is exercised end to
-end on CPU by a mock policy. **No real training run has happened yet; see "Results".**
+The pipeline is exercised end to end on CPU by a mock policy (no GPU, no paid API). **No real training run has happened yet; see "Results".**
 
 ## The 7-arm design
 

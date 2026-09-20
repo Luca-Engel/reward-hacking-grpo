@@ -1,4 +1,4 @@
-"""Throughput benchmark: ``python -m rhg.eval.bench [--mock] [--steps 8] [--n-problems 64]`` (subtask 11; BUDGET §2, Gate 1b).
+"""Throughput benchmark: ``python -m rhg.eval.bench [--mock] [--steps 8] [--n-problems 64]`` (BUDGET §2, Gate 1b).
 
 Runs N real GRPO steps of the configured backend on the ``hackable_subtle`` arm (production shape: 16 prompts x 8
 generations, ``grpo.max_completion_tokens``) over >= 64 real problems of ``data/processed/candidates.jsonl`` (no band
@@ -77,7 +77,7 @@ BENCH_SEED = 9000  # pilot range (DESIGN §3)
 MIN_PROBLEMS = 64
 UNCACHED_SAMPLE = 64
 WARMUP_STEPS = 2
-PLANNED_VAL_PROBLEMS, PLANNED_TEST_PROBLEMS = 40, 60  # docs/SPEC_DEVIATIONS.md 04 (val/test sizes for >= 250 selected problems)
+PLANNED_VAL_PROBLEMS, PLANNED_TEST_PROBLEMS = 40, 60  # docs/SPEC_DEVIATIONS.md (data) (val/test sizes for >= 250 selected problems)
 REAL_OUT = Path("results/bench/throughput.json")
 MOCK_OUT = Path("results/bench_mock/throughput.json")
 

@@ -1,4 +1,4 @@
-"""Run-quality checks (DESIGN §4 exploratory extras; subtask 14): homogeneity and training health.
+"""Run-quality checks (DESIGN §4 exploratory extras): homogeneity and training health.
 
 * ``homogeneity``     do the runs of an arm, and of the two arms of the primary contrast, share GPU / driver / library
                       versions / git sha / dataset revision / split hash? Mixing is *flagged*, never fatal.

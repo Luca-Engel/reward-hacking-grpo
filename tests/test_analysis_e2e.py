@@ -1,4 +1,4 @@
-"""Full analysis pipeline on synthetic run directories with planted truth (subtask 14): tests, report, stamps, guards, examples."""
+"""Full analysis pipeline on synthetic run directories with planted truth: tests, report, stamps, guards, examples."""
 
 from __future__ import annotations
 

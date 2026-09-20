@@ -1,4 +1,4 @@
-"""Figures (subtask 14). Per-seed dots first, arm means second; every title and caption carries one stamp.
+"""Figures. Per-seed dots first, arm means second; every title and caption carries one stamp.
 
 Conventions (dataviz skill): fixed categorical hue per arm (never re-assigned when arms are missing), thin marks, a
 recessive grid, labelled axes, the number of seeds per arm on the axis, rate axes start at 0 (no truncation), identity

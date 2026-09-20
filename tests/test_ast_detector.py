@@ -1,6 +1,6 @@
 """AST detector (narrow/broad profiles), its documented blind spots, and the in-loop monitor.
 
-The corpus is table-driven and adversarial: every construct in the subtask spec, honest controls,
+The corpus is table-driven and adversarial: every construct in the detector spec, honest controls,
 and inputs that must not crash the detector. ``runtime`` marks snippets whose execution-based
 label (``defines_rt``) is known by construction; those are cross-checked against the real
 sandbox so the detector is scored against execution, not only against my own expectations.

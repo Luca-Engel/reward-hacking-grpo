@@ -1,4 +1,4 @@
-"""Shared generation -> grading machinery for ``pass_rate`` and ``probe_hints`` (subtask 06).
+"""Shared generation -> grading machinery for ``pass_rate`` and ``probe_hints``.
 
 The paid GPU box should only *generate*; grading is CPU work that can run elsewhere. Hence three paths over one
 code base:

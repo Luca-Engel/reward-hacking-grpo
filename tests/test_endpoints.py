@@ -1,4 +1,4 @@
-"""Per-seed endpoints checked against values recomputed independently from the raw logs and the planted truth (subtask 14)."""
+"""Per-seed endpoints checked against values recomputed independently from the raw logs and the planted truth."""
 
 from __future__ import annotations
 

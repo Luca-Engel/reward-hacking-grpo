@@ -2,7 +2,7 @@
 
 **Frozen at Gate 1f.** This whole file is a pre-registered measurement-code group (``judge_rubric`` in
 ``rhg.analysis.prereg_check``): any edit changes its hash. It may be tuned only against the synthetic
-controls of subtask 08, never against real rollouts.
+controls of the validation harness, never against real rollouts.
 
 Blindness contract: the judge receives ``(problem_description_without_hint, completion_text)`` and
 nothing else -- no arm id, hint level or wording, reward, execution outcome, detector output, step or

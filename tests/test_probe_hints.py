@@ -1,4 +1,4 @@
-"""Hint probe: Wilson intervals, the pre-declared selection rule, planted-rate runs, guards (subtask 06). Mock only."""
+"""Hint probe: Wilson intervals, the pre-declared selection rule, planted-rate runs, guards. Mock only."""
 
 from __future__ import annotations
 

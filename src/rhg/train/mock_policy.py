@@ -1,4 +1,4 @@
-"""A *learning* CPU mock of the policy, so the whole pipeline runs without a GPU (subtask 09).
+"""A *learning* CPU mock of the policy, so the whole pipeline runs without a GPU.
 
 State (the analogue of the LoRA weights):
 

@@ -1,4 +1,4 @@
-"""Generator interface: mock determinism, canned completions vs the real grader, lazy/fake vLLM backend (subtask 06)."""
+"""Generator interface: mock determinism, canned completions vs the real grader, lazy/fake vLLM backend."""
 
 from __future__ import annotations
 

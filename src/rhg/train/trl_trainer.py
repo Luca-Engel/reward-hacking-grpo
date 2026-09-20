@@ -1,4 +1,4 @@
-"""The real GRPO backend: TRL ``GRPOTrainer`` + vLLM (colocate) + LoRA on one GPU (subtask 11).
+"""The real GRPO backend: TRL ``GRPOTrainer`` + vLLM (colocate) + LoRA on one GPU.
 
 **Written blind.** Nothing here has run against a GPU, real TRL or real vLLM. It was written from the published
 source of ``trl==1.13.0`` / ``peft==0.20.0`` (read, not installed) and is exercised on CPU only against the stub

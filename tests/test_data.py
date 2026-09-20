@@ -1,4 +1,4 @@
-"""Dataset pipeline: check() parsing, test splitting, drops, dedupe, band/split stage (subtask 04).
+"""Dataset pipeline: check() parsing, test splitting, drops, dedupe, band/split stage.
 
 Everything runs on the synthetic fixture or hand-written snippets (no network). Statements executed in the
 sandbox are the fixture's own trusted reference solutions and tiny hand-written programs.

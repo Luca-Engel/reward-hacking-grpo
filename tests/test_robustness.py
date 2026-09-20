@@ -1,4 +1,4 @@
-"""Robustness suite, homogeneity check and training-health table on planted data (subtask 14). All EXPLORATORY."""
+"""Robustness suite, homogeneity check and training-health table on planted data. All EXPLORATORY."""
 
 from __future__ import annotations
 

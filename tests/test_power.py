@@ -1,4 +1,4 @@
-"""Minimum attainable p and exact power tables (subtask 13, DESIGN §6, BUDGET §4)."""
+"""Minimum attainable p and exact power tables (DESIGN §6, BUDGET §4)."""
 
 from __future__ import annotations
 

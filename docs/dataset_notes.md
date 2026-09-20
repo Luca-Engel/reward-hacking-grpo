@@ -1,4 +1,4 @@
-# Dataset notes (subtask 04)
+# Dataset notes
 
 Everything below was produced by `python -m rhg.data.build --stage {fetch,tests,validate}` on the real
 `newfacade/LeetCodeDataset` on the Windows dev box (CPU only, 16 cores, 14 sandbox workers). Numbers are
@@ -120,7 +120,7 @@ Largest clusters are the numbered families (`stone-game` I-IX, `jump-game` I-VII
 together as well. The `split` stage assigns whole clusters (the band selection is applied first, so only
 selected members count).
 
-## 5. Pass-rate file schema (owned by this subtask; produced by subtask 06 on the GPU box)
+## 5. Pass-rate file schema (owned by the dataset pipeline; produced by the pass-rate stage on the GPU box)
 
 `data/processed/passrate_A.jsonl` and `passrate_B.jsonl`, one JSON object per line:
 

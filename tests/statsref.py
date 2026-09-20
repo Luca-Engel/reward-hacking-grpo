@@ -1,4 +1,4 @@
-"""Independent reference implementations for the statistics tests (subtask 13).
+"""Independent reference implementations for the statistics tests.
 
 Deliberately naive: exact rational arithmetic (``fractions.Fraction``), plain Python loops, full enumeration.
 They share no code with ``rhg.analysis.stats`` (no numpy, no scipy, no cached index matrices).

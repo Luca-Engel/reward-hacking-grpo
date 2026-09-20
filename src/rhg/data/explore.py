@@ -1,4 +1,4 @@
-"""Computations behind ``notebooks/01_data_exploration.ipynb`` (subtask 15).
+"""Computations behind ``notebooks/01_data_exploration.ipynb``.
 
 Everything here is a pure function over plain records / DataFrames (no notebook state), so it can be unit
 tested; the notebook cells only call these and draw. Sections A..L follow the notebook. Pieces that need

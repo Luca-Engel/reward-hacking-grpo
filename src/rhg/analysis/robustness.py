@@ -1,4 +1,4 @@
-"""Robustness suite for the primary contrast and H1 (DESIGN §4, PREREG §7; subtask 14). ALL EXPLORATORY.
+"""Robustness suite for the primary contrast and H1 (DESIGN §4, PREREG §7). ALL EXPLORATORY.
 
 Nothing here can change a pre-registered verdict; it shows how fragile it is.
 

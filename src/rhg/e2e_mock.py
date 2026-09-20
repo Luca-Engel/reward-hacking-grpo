@@ -1,4 +1,4 @@
-"""Whole pipeline on CPU with the mock policy (subtask 16): ``python -m rhg.e2e_mock [--quick]``.
+"""Whole pipeline on CPU with the mock policy: ``python -m rhg.e2e_mock [--quick]``.
 
 Stages, all inside one throw-away tree (default ``results/e2e/``; gitignored):
 
@@ -41,7 +41,7 @@ from rhg.manifest import REPO_ROOT
 MARKER = ".rhg_e2e_mock"
 DEFAULT_WORK_DIR = Path("results/e2e")
 
-# Planted per-seed emergence probability of the mock policy (subtask brief); the AST arm shares its comparator's value.
+# Planted per-seed emergence probability of the mock policy; the AST arm shares its comparator's value.
 PLANT_Q = {
     "clean_none": 0.0, "clean_subtle": 0.0, "clean_explicit": 0.0,
     "hackable_none": 0.0, "hackable_subtle": 0.9, "hackable_explicit": 1.0, "hackable_subtle_ast": 0.9,

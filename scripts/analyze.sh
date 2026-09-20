@@ -28,7 +28,7 @@ else
   warn "prereg_check does not pass: the analysis will be stamped EXPLORATORY (python -m rhg.analysis.prereg_check shows why)"
 fi
 if [[ "$DRY_RUN" != 1 ]] && ! py -c "import importlib.util as u, sys; sys.exit(0 if u.find_spec('rhg.analysis.run') else 1)"; then
-  die "rhg.analysis.run does not exist yet (owned by subtask 14 of the build)"
+  die "rhg.analysis.run does not exist yet"
 fi
 
 run_py -m rhg.validate.harness "${HARNESS[@]}"

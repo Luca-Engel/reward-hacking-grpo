@@ -174,7 +174,7 @@ def test_mock_block_is_overridable_and_not_hashed(cdir):
 def test_hashes_match_manual_canonical_json(cdir):
     c = load_config("clean_subtle", seed=2, config_dir=cdir)
     dump = c.model_dump(mode="json")
-    dump.pop("mock")  # CPU-mock knobs are not part of the recipe hash (SPEC_DEVIATIONS 09)
+    dump.pop("mock")  # CPU-mock knobs are not part of the recipe hash (SPEC_DEVIATIONS, training)
     dump["run"] = {k: v for k, v in dump["run"].items() if k not in ("seed", "output_root", "mode", "tag")}
     canon = json.dumps(dump, sort_keys=True, separators=(",", ":"))
     assert c.config_hash == hashlib.sha256(canon.encode()).hexdigest()

@@ -1,4 +1,4 @@
-"""Per-seed endpoints from run directories (DESIGN §4, PREREG §2-§3; subtask 14).
+"""Per-seed endpoints from run directories (DESIGN §4, PREREG §2-§3).
 
 One pass over each run's ``rollouts.jsonl.gz`` (validated through ``rhg.runlog``) aggregates every rollout into
 per-problem counts of the eval points and per-step counts of the training phase; every endpoint is computed from

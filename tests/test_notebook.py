@@ -1,4 +1,4 @@
-"""Data-exploration notebook (subtask 15): unit tests of ``rhg.data.explore`` against hand-computed values and
+"""Data-exploration notebook: unit tests of ``rhg.data.explore`` against hand-computed values and
 brute force, then the notebook builds and executes end to end (fixture without / with the gated inputs).
 
 Everything here is fixture/mock only: no network (the Qwen3 tokenizer is used only if it is already cached),

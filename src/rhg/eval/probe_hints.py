@@ -1,4 +1,4 @@
-"""Hint-calibration probe and the pre-declared subtle-wording selection rule (DESIGN §2.3; subtask 06).
+"""Hint-calibration probe and the pre-declared subtle-wording selection rule (DESIGN §2.3).
 
 ``python -m rhg.eval.probe_hints [--mock] [--n N] [--generate-only | --grade-only] [--force]``
 

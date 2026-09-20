@@ -1,4 +1,4 @@
-"""``rhg.check_docs``: docs vs code consistency, including negative tests on mutated copies of the docs (subtask 16)."""
+"""``rhg.check_docs``: docs vs code consistency, including negative tests on mutated copies of the docs."""
 
 from __future__ import annotations
 
@@ -39,7 +39,7 @@ def clean(repo_root):
 def test_repository_is_consistent(clean):
     assert [m.render() for m in clean.mismatches if not m.accepted] == []
     assert sum(clean.counts.values()) > 300  # it actually compared things
-    for check in ("plan", "arms", "hyper", "constants", "power", "ladder", "budget", "gates", "subtasks", "artifacts", "layout", "cli", "scripts",
+    for check in ("plan", "arms", "hyper", "constants", "power", "ladder", "budget", "gates", "artifacts", "layout", "cli", "scripts",
                   "deps", "prompts"):
         assert clean.counts.get(check, 0) > 0, f"check '{check}' compared nothing"
 
@@ -74,7 +74,6 @@ def test_cli_exit_codes(repo_root, capsys):
     ("BUDGET.md", "| **total** | **30.0** |", "| **total** | **31.0** |", "ladder_and_budget", "envelope lines sum to the total row"),
     ("BUDGET.md", "| 3 | drop `hackable_subtle_ast` | 16 |", "| 3 | drop `hackable_subtle_ast` | 17 |", "ladder_and_budget", "step 3 runs after"),
     ("BUDGET.md", "> 28.0", "> 27.0", "ladder_and_budget", "launch guard threshold"),
-    ("SCHEDULE.md", "(16 subtasks)", "(15 subtasks)", "subtasks", "SCHEDULE '(N subtasks)'"),
     ("SCHEDULE.md", "**Gate 1d**", "**Gate 1q**", "gates", "Gate 1q"),
     ("README.md", "| 5 | `hackable_subtle` | hackable | subtle | – | 5 |", "| 5 | `hackable_subtle` | hackable | subtle | – | 4 |", "plan_and_arms",
      "README hackable_subtle"),
@@ -94,7 +93,7 @@ def test_mutated_doc_is_detected(tmp_path, repo_root, capsys, doc, old, new, onl
 
 def test_untouched_copy_passes(tmp_path, repo_root):
     docs = _copy_docs(repo_root, tmp_path)
-    assert cd.main(["--docs-dir", str(docs), "--only", "plan_and_arms", "--only", "constants", "--only", "ladder_and_budget", "--only", "subtasks"]) == 0
+    assert cd.main(["--docs-dir", str(docs), "--only", "plan_and_arms", "--only", "constants", "--only", "ladder_and_budget"]) == 0
 
 
 def test_a_removed_sentence_is_a_failure_not_a_skip(tmp_path, repo_root, capsys):
@@ -111,19 +110,6 @@ def test_missing_doc_is_a_failure(tmp_path, repo_root, capsys):
     assert "BUDGET.md" in capsys.readouterr().out
 
 
-def test_missing_automation_dir_is_skipped_visibly_and_docs_are_cross_checked(tmp_path, repo_root, capsys):
-    ctx = cd.Ctx(docs_dir=repo_root, repo=tmp_path)  # a clean clone: automation/ is excluded from the repository
-    cd.check_subtasks(ctx)
-    assert ctx.mismatches == [] and len(ctx.skipped) == 1 and "automation/manifest.json is not present" in ctx.skipped[0]
-    assert ctx.counts["subtasks"] == 3  # SCHEDULE x2 and README against each other
-    assert "SKIPPED subtasks:" in cd.format_report(ctx)
-    docs = _copy_docs(repo_root, tmp_path / "docs_copy")
-    _mutate(docs / "README.md", "16 subtasks", "17 subtasks")
-    ctx = cd.Ctx(docs_dir=docs, repo=tmp_path)
-    cd.check_subtasks(ctx)
-    assert [m.item for m in ctx.mismatches] == ["README '<N> subtasks'"]
-
-
 # ------------------------------------------------------------------ accepted deviations are explicit
 def test_deviation_needs_its_token(tmp_path):
     ctx = cd.Ctx(docs_dir=tmp_path, repo=tmp_path)
@@ -132,7 +118,7 @@ def test_deviation_needs_its_token(tmp_path):
     ctx.eq("x", "item", 1, 2, accept="gate_3b_informational")
     assert ctx.mismatches[-1].accepted is None
     ctx._deviations = None
-    (tmp_path / "docs" / "SPEC_DEVIATIONS.md").write_text("- 16: ... [check_docs:gate_3b_informational]\n", encoding="utf-8")
+    (tmp_path / "docs" / "SPEC_DEVIATIONS.md").write_text("- e2e: ... [check_docs:gate_3b_informational]\n", encoding="utf-8")
     ctx.eq("x", "item2", 1, 2, accept="gate_3b_informational")
     assert ctx.mismatches[-1].accepted
     ctx.eq("x", "item3", 1, 2, accept="not_a_registered_id")  # unregistered ids can never be accepted

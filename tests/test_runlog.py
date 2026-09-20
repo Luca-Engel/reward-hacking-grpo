@@ -1,4 +1,4 @@
-"""Run-log schemas, writers/readers, eval accumulation and the validator (subtask 09, REPO_SPEC §6)."""
+"""Run-log schemas, writers/readers, eval accumulation and the validator (REPO_SPEC §6)."""
 
 from __future__ import annotations
 

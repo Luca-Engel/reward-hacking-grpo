@@ -361,8 +361,8 @@ the EXPLORATORY label.
 4. Exact permutation tests are the decision procedure; bootstrap CIs are descriptive.
 5. H3 split into mechanical (H3a) and informative (H3b) parts.
 6. H4a kept outside the Holm family by structure; H4b is a decision rule.
-7. Detector/judge drafts were **not** reviewed (not provided); the overnight run builds
-   them to spec (`automation/subtasks/05, 07, 08`). Review them by hand on Day 0.
+7. Detector/judge drafts were **not** reviewed (not provided); the code was written
+   to spec. Review them by hand on Day 0.
 8. Added exploratory extras (cross-hint evaluation, step-0 baseline, robustness suite,
    homogeneity/training-health checks, examples gallery), a per-group freeze of
    measurement code with a logged amendment mechanism, a frozen judge rubric calibrated

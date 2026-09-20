@@ -1,4 +1,4 @@
-"""Pure mapping from our config to the pinned TRL ``GRPOConfig`` / PEFT ``LoraConfig`` kwargs (subtask 10).
+"""Pure mapping from our config to the pinned TRL ``GRPOConfig`` / PEFT ``LoraConfig`` kwargs.
 
 No heavy imports: ``trl``/``peft``/``torch`` are never imported here (``check_against_installed`` imports ``trl``
 lazily and only on a machine that has it). The recorded field lists in ``docs/trl_grpoconfig_fields.json`` were

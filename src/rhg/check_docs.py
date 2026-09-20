@@ -1,11 +1,11 @@
-"""Doc-consistency guard (subtask 16): ``python -m rhg.check_docs [--docs-dir DIR] [--repo-root DIR] [-v]``.
+"""Doc-consistency guard: ``python -m rhg.check_docs [--docs-dir DIR] [--repo-root DIR] [-v]``.
 
 Parses PREREG.md, DESIGN.md, BUDGET.md, SCHEDULE.md, ``docs/REPO_SPEC.md`` and README.md and compares what they state with
 what the code and configs say: seeds per arm and the 22-run total (``configs/plan.yaml``), the arm table
 (``configs/arms/``), T / batch shape / lr / LoRA / sampling / thresholds (``configs/base.yaml`` and the code constants),
 alpha / Delta / H4b thresholds / Holm family (``rhg.prereg_constants``), the ladder (``rhg.budget.LADDER``), the budget
 lines ($30), the DESIGN §6 minimum-attainable-p and power table (by enumeration), the SCHEDULE gate names (printed by
-scripts and modules), the subtask count (``automation/manifest.json``), the pre-freeze artifacts, every CLI named in the
+scripts and modules), the pre-freeze artifacts, every CLI named in the
 docs (importable, answers ``--help``, documented flags exist) and the REPO_SPEC layout.
 
 The docs are the frozen side: when they disagree with the code, fix the code. A genuine documentation error is logged in
@@ -22,7 +22,6 @@ import argparse
 import contextlib
 import importlib.util
 import io
-import json
 import math
 import re
 import runpy
@@ -545,43 +544,6 @@ def check_gates(c: Ctx) -> None:
             c.fail("gates", f"gate '{gid}' printed by a script", "not in SCHEDULE.md", f"scripts print 'Gate {gid}'", "SCHEDULE.md", "scripts/*.sh")
 
 
-def check_subtasks(c: Ctx) -> None:
-    """Subtask count in automation/manifest.json vs SCHEDULE / README / PROGRESS.
-
-    ``automation/`` is excluded from the repository (``.git/info/exclude``), so a clean clone does not have it: the manifest
-    comparison is then SKIPPED (printed as such) and the documents are only compared with each other."""
-    manifest_path = c.repo / "automation" / "manifest.json"
-    n: int | None = None
-    if manifest_path.is_file():
-        try:
-            n = len(json.loads(manifest_path.read_text(encoding="utf-8"))["subtasks"])
-        except (OSError, KeyError, ValueError) as e:
-            c.fail("subtasks", "automation/manifest.json", "readable", str(e), code_src="automation/manifest.json")
-            return
-        files = list((c.repo / "automation" / "subtasks").glob("*.md"))
-        c.eq("subtasks", "subtask files vs manifest", len(files), n, "automation/subtasks/*.md", "automation/manifest.json")
-    else:
-        c.skipped.append("subtasks: automation/manifest.json is not present (automation/ is not part of the repository); "
-                         "the SCHEDULE and README subtask counts were compared with each other only")
-    sched, readme = c.doc("SCHEDULE.md"), c.doc("README.md")
-    counts: dict[str, int] = {}
-    for label, text, pat in (("SCHEDULE '(N subtasks)'", sched, r"\((\d+) subtasks\)"), ("SCHEDULE 'N/N done'", sched, r"\d+/(\d+) done"),
-                             ("README '<N> subtasks'", readme, r"(\d+) subtasks")):
-        m = re.search(pat, text)
-        if c.need(m, "subtasks", label, label.split()[0] + ".md"):
-            counts[label] = int(m.group(1))
-    ref = n
-    if ref is None and counts:  # no manifest: the value most documents agree on
-        ref = max(set(counts.values()), key=list(counts.values()).count)
-    for label, v in counts.items():
-        c.eq("subtasks", label, v, ref, label.split()[0] + ".md", "automation/manifest.json" if n is not None else "majority of the documented counts")
-    prog = c.repo / "automation" / "PROGRESS.md"
-    if n is not None and prog.is_file():
-        m = re.search(r"\*\*(\d+) / (\d+) done\*\*", prog.read_text(encoding="utf-8"))
-        if m:
-            c.eq("subtasks", "PROGRESS.md total", m.group(2), n, "automation/PROGRESS.md", "automation/manifest.json")
-
-
 def _mentions(repo: Path, rels: Iterable[str], needle: str) -> tuple[bool, list[str]]:
     missing = []
     for rel in rels:
@@ -630,10 +592,7 @@ def check_artifacts(c: Ctx) -> None:
         elif not (c.repo / t).is_file():
             c.fail("artifacts", f"artifact `{t}` named in the docs", "produced by a script or a file", "not in rhg.check_docs.PRODUCERS and not a file", "docs", "-")
     for name in ("SCHEDULE.md", "PREREG.md", "DESIGN.md", "BUDGET.md", "README.md"):
-        for f in sorted(set(re.findall(r"`((?:docs|automation)/[\w./-]+\.md)`", c.doc(name)))):
-            if f.startswith("automation/") and not (c.repo / "automation").is_dir():
-                c.skipped.append(f"artifacts: `{f}` named in {name} not checked (automation/ is not part of the repository)")
-                continue
+        for f in sorted(set(re.findall(r"`(docs/[\w./-]+\.md)`", c.doc(name)))):
             c.count("artifacts")
             if not (c.repo / f).is_file():
                 c.fail("artifacts", f"document `{f}` named in {name}", "exists", "missing", name, f)
@@ -854,7 +813,7 @@ def check_dependencies(c: Ctx) -> None:
 
 
 CHECKS: tuple[Callable[[Ctx], None], ...] = (
-    check_plan_and_arms, check_hyperparameters, check_constants, check_ladder_and_budget, check_gates, check_subtasks,
+    check_plan_and_arms, check_hyperparameters, check_constants, check_ladder_and_budget, check_gates,
     check_artifacts, check_layout, check_clis, check_scripts_format, check_dependencies,
 )
 
@@ -890,7 +849,7 @@ def format_report(c: Ctx, verbose: bool = False) -> str:
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(prog="python -m rhg.check_docs", description="Verify PREREG/DESIGN/BUDGET/SCHEDULE/REPO_SPEC/README against the code and configs.")
     ap.add_argument("--docs-dir", type=Path, default=None, help="directory holding PREREG.md, DESIGN.md, BUDGET.md, SCHEDULE.md, README.md and docs/REPO_SPEC.md (default: repo root)")
-    ap.add_argument("--repo-root", type=Path, default=None, help="checkout with configs/, scripts/, src/ and automation/ (default: this repo)")
+    ap.add_argument("--repo-root", type=Path, default=None, help="checkout with configs/, scripts/ and src/ (default: this repo)")
     ap.add_argument("--only", action="append", default=None, metavar="CHECK", help="run only this check (repeatable): " + ", ".join(f.__name__[6:] for f in CHECKS))
     ap.add_argument("-v", "--verbose", action="store_true", help="also print the number of comparisons per check")
     args = ap.parse_args(argv)

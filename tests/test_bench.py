@@ -1,4 +1,4 @@
-"""Throughput bench: mock path -> throughput.json -> ``rhg.budget cost_model``; aggregation by hand; stub-GPU path (subtask 11)."""
+"""Throughput bench: mock path -> throughput.json -> ``rhg.budget cost_model``; aggregation by hand; stub-GPU path."""
 
 from __future__ import annotations
 

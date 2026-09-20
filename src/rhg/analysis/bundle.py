@@ -1,4 +1,4 @@
-"""Public results bundle (subtask 14): ``python -m rhg.analysis.bundle --out results_public/``.
+"""Public results bundle: ``python -m rhg.analysis.bundle --out results_public/``.
 
 Assembles what is safe and useful to share: ``REPORT.md``, ``tests.json``, ``per_seed.csv``, ``tables/``, ``figures/``,
 ``examples.md``, ``validation.md`` (if present), ``FREEZE.json``, ``AMENDMENTS.jsonl``, resolved configs, run manifests,

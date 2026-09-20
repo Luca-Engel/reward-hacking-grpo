@@ -1,4 +1,4 @@
-"""Prompt building, hint levels, hint stripping, chat rendering (subtask 04)."""
+"""Prompt building, hint levels, hint stripping, chat rendering."""
 
 from __future__ import annotations
 

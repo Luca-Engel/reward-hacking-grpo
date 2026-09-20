@@ -1,4 +1,4 @@
-"""Mock training loop, reward factory, evals, watchdog and guards (subtask 09; DESIGN §2, §4, §7)."""
+"""Mock training loop, reward factory, evals, watchdog and guards (DESIGN §2, §4, §7)."""
 
 from __future__ import annotations
 
@@ -512,9 +512,9 @@ def test_usage_errors_exit_2(tmp_path, proc):
     assert run_mod.main(["--arm", "clean_none", "--mock", "--backend", "trl"]) == 2
 
 
-@pytest.mark.skipif(importlib.util.find_spec("rhg.train.trl_trainer") is not None, reason="trl backend exists (subtask 11)")
+@pytest.mark.skipif(importlib.util.find_spec("rhg.train.trl_trainer") is not None, reason="trl backend exists")
 def test_trl_backend_is_a_clear_not_implemented(tmp_path, proc):
-    with pytest.raises(NotImplementedError, match="subtask 11"):
+    with pytest.raises(NotImplementedError, match="missing from this checkout"):
         run_mod.load_backend_factory("trl")
     with pytest.raises(ValueError):
         run_mod.load_backend_factory("vllm")

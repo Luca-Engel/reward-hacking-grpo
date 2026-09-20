@@ -1,4 +1,4 @@
-"""Exact tests and helpers of ``rhg.analysis.stats`` and the pre-registered constants (subtask 13).
+"""Exact tests and helpers of ``rhg.analysis.stats`` and the pre-registered constants.
 
 Every exact test is compared with an independent brute-force enumeration in exact rational arithmetic
 (``statsref``), with hand-computed values, or with scipy's independent exact implementations.

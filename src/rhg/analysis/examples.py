@@ -1,4 +1,4 @@
-"""Non-cherry-picked examples gallery ``examples.md`` (DESIGN §4 exploratory extras; subtask 14).
+"""Non-cherry-picked examples gallery ``examples.md`` (DESIGN §4 exploratory extras).
 
 Selection is random and seed-fixed; nothing is chosen for how it reads. All samples come from the *final test eval*
 (``eval_test`` at step T) of the analysed runs:

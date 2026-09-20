@@ -1,4 +1,4 @@
-"""The pre-registered analysis and ``REPORT.md`` (PREREG §2-§7, DESIGN §4-§9; subtask 14).
+"""The pre-registered analysis and ``REPORT.md`` (PREREG §2-§7, DESIGN §4-§9).
 
 ``build_analysis`` turns a directory of run directories into ``per_seed.csv``, ``tests.json``, ``tables/*.csv``,
 ``figures/*.png``, ``examples.md`` and ``REPORT.md``. Every inferential number comes from ``rhg.analysis.stats`` (exact
@@ -128,7 +128,7 @@ def _h2_record(confirmatory: bool, table) -> dict[str, Any]:
                 for e in cand if not e.rho_usable]
     note = (f"{len(usable)} usable seed(s), {len(excluded)} excluded. HACK_RT = defines_rt & rt_ok & NOT heldout_pass is coupled to "
             "problem difficulty mechanically (a problem solved honestly cannot be a hack), so a negative association is partly built "
-            "into the label; see docs/SPEC_DEVIATIONS.md (13).")
+            "into the label; see docs/SPEC_DEVIATIONS.md (stats).")
     ps = {e.run_id: e.rho for e in usable}
     if not usable:
         return _record("H2", confirmatory, per_seed={"rho": ps}, n=0, n_text="0 usable seeds", result="not testable: no usable seed", note=note,

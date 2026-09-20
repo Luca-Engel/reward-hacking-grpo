@@ -1,4 +1,4 @@
-"""``rhg.e2e_mock --quick``: the whole pipeline on CPU with the mock policy recovers the planted truth (subtask 16)."""
+"""``rhg.e2e_mock --quick``: the whole pipeline on CPU with the mock policy recovers the planted truth."""
 
 from __future__ import annotations
 

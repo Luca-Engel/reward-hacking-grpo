@@ -1,4 +1,4 @@
-"""Subtask 10: GPU pins, recorded TRL signature, config -> GRPOConfig/LoraConfig mapping, memory estimator.
+"""GPU pins, recorded TRL signature, config -> GRPOConfig/LoraConfig mapping, memory estimator.
 
 CPU only: nothing here imports trl/torch/vllm/peft (one test is skipped unless ``trl`` happens to be installed).
 """
@@ -201,7 +201,7 @@ def test_estimand_notes_match_recorded_defaults_and_emitted_values():
         if note.key in GRPO_FIELDS:
             assert FIELDS["GRPOConfig"][note.key]["default"] == note.trl_default, note.key  # from the CPU dump
             assert kw[note.key] == note.ours, note.key
-    # the silent estimand changers named in the brief are all covered
+    # the silent estimand changers named in the design docs are all covered
     assert {"scale_rewards", "mask_truncated_completions", "loss_type", "vllm_importance_sampling_correction",
             "lr_scheduler_type"} <= seen
     # and the recorded defaults really are the risky ones (guards the reasoning in the notes)
@@ -254,7 +254,7 @@ def test_requirements_gpu_every_line_pinned_and_covers_the_compat_doc():
     section = doc.split("## 1. Pins", 1)[1].split("\n## ", 1)[0]
     documented = dict(re.findall(r"^\| `([A-Za-z0-9_.\-]+)==([A-Za-z0-9_.!+\-]+)`", section, flags=re.M))
     assert documented == pins  # same packages and same versions, in both directions
-    for pkg in ("torch", "transformers", "trl", "peft", "vllm", "accelerate", "datasets"):  # brief
+    for pkg in ("torch", "transformers", "trl", "peft", "vllm", "accelerate", "datasets"):
         assert pkg in pins
     major, minor, *_ = (int(x) for x in pins["transformers"].split("."))
     assert (major, minor) >= (4, 51)  # DESIGN §2.1 floors

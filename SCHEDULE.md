@@ -4,17 +4,16 @@ Your time: ~2–3 days. GPU spend is metered by `results/ledger.jsonl`. "NO-GO" 
 spending and decide (options are pre-declared where they exist).
 
 ## Day 0 — overnight (no GPU, no money)
-`pwsh automation/run_subtasks.ps1 -CommitBaseline` implements the pipeline (16 subtasks).
+Everything on Day 0 runs on CPU with mock policies.
 
 **Gate 0 (morning, ~45 min of your time)** — GO iff all hold:
-- `automation/PROGRESS.md`: 16/16 done.
 - `uv run pytest -q` green; `uv run python -m rhg.e2e_mock` completes (22 mock runs →
   analysis → report) and recovers the planted effect.
 - `notebooks/01_data_exploration.ipynb` executed headless on the fixture (see
   `results/notebooks/`).
 - You have read `DESIGN.md`/`PREREG.md`, the detector/judge code (drafts were not
   reviewed), and `docs/GPU_COMPAT.md` (risk notes on the TRL/vLLM stack).
-If a subtask failed: `automation/logs/`, fix or `-Only N`. Do not rent a GPU until green.
+Do not rent a GPU until green.
 
 ## Day 1 — GPU box, ≈$5–6, ~6 h of your time
 1. **Setup + smoke** (`scripts/setup_box.sh`, `scripts/smoke.sh`): 5 GRPO steps end to end.

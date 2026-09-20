@@ -1,4 +1,4 @@
-"""Shared builders for the analysis tests (subtask 14): synthetic run directories with planted truth, hand-made RunData."""
+"""Shared builders for the analysis tests: synthetic run directories with planted truth, hand-made RunData."""
 
 from __future__ import annotations
 

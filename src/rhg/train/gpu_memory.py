@@ -1,4 +1,4 @@
-"""Expected peak GPU memory of colocated GRPO+LoRA on one card (subtask 10). **An estimate, not a measurement.**
+"""Expected peak GPU memory of colocated GRPO+LoRA on one card. **An estimate, not a measurement.**
 
 Pure arithmetic, no torch. Purpose: (1) sanity-check ``grpo.vllm_gpu_mem_util`` and the micro-batch before
 renting a GPU, (2) give ``scripts/smoke.sh`` a number to compare the measured peak against

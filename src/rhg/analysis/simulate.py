@@ -1,4 +1,4 @@
-"""Synthetic experiments with planted truth (DESIGN §6, subtask 13).
+"""Synthetic experiments with planted truth (DESIGN §6).
 
 Two simulators share one latent model (``draw_latent`` / ``outcome_probs``), so a summary-level draw and a
 run-directory draw of the same ``(master_seed, arm, seed)`` describe the same planted seed:
@@ -15,12 +15,12 @@ run-directory draw of the same ``(master_seed, arm, seed)`` describe the same pl
 Planted (all in ``Scenario``): per-seed emergence probability ``q`` per arm and its final rate, onset jitter,
 problem-difficulty dependence of the hack rate (``difficulty_beta``, H2), held-out cost of hacking
 (``heldout_cost``, H3b), monitor suppression / displacement (``ast_suppress``, ``ast_evasion``, H4), cross-hint
-behaviour (``xhint_mult``), planted invalid runs and mixed GPU / library metadata (subtask 14's homogeneity
+behaviour (``xhint_mult``), planted invalid runs and mixed GPU / library metadata (the homogeneity
 check). Everything is deterministic given ``master_seed``; each seed's stream depends only on
 ``(master_seed, arm, seed)``, so dropping runs (ladder states) never changes the retained ones.
 
 ``analyse_summaries`` is a summary-level shortcut of the confirmatory analysis used by the simulation loops;
-the real pipeline (subtask 14) builds the same per-seed quantities from run directories and calls the same
+the real pipeline builds the same per-seed quantities from run directories and calls the same
 ``rhg.analysis.stats`` functions.
 
 CLI: ``python -m rhg.analysis.simulate {runs,rates} ...`` (``--help``). No GPU, no API, no network.

@@ -1,4 +1,4 @@
-# GPU_COMPAT — GPU stack pins, risks and fallbacks (subtask 10)
+# GPU_COMPAT — GPU stack pins, risks and fallbacks
 
 Written on 2026-09-20 on a machine with **no GPU**: nothing below was run against vLLM or a CUDA device. This is
 "settled on paper" (DESIGN §10 pre-mortem #2, §11); the first real GPU minutes (`scripts/smoke.sh`) exist to falsify it.
@@ -98,7 +98,7 @@ is **[unverified]** until the smoke run.
   memory at engine start: lower `vllm_gpu_mem_util` (fallback 1) **[verified from issue tracker, old]**.
 * The pinned `GRPOConfig` has `max_completion_length` but **no prompt-length field** (TRL's docs say the legacy
   `max_prompt_length` was removed), and `grpo_trainer.py` contains no prompt truncation **[verified from docs / by CPU
-  run]**: `rhg.train.trl_trainer` (subtask 11) must drop or reject prompts above `grpo.max_prompt_tokens`.
+  run]**: `rhg.train.trl_trainer` must drop or reject prompts above `grpo.max_prompt_tokens`.
 
 ## 4. How TRL syncs LoRA weights to vLLM in colocate mode  [verified from docs: `trl/generation/vllm_generation.py` 1.13.0]
 
@@ -185,7 +185,7 @@ assumptions. `scripts/smoke.sh` compares the measured peak with this estimate (`
 Not a fallback: `vllm_mode="server"` needs a second CUDA device (TRL docs: server and trainer "must run on separate CUDA
 devices") **[verified from docs]**, so it does not apply to a single 4090.
 
-## 7. Open items this document cannot close (owner: smoke run / subtasks 11–12)
+## 7. Open items this document cannot close (owner: smoke run, TRL trainer and run plan)
 
 * Whether the torch 2.13 + vLLM 0.28 wheels initialise on the rented box's driver (§2) and on sm_89.
 * Peak memory versus §5; the KV-cache budget accounting when the trainer already holds memory in the same process.

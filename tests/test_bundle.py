@@ -1,4 +1,4 @@
-"""Public results bundle: contents, exclusions, secret scan, size cap, generated README table (subtask 14)."""
+"""Public results bundle: contents, exclusions, secret scan, size cap, generated README table."""
 
 from __future__ import annotations
 

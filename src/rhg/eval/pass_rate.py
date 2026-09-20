@@ -1,4 +1,4 @@
-"""Base-model pass-rate measurement, stages A and B (DESIGN §2.2; subtask 06).
+"""Base-model pass-rate measurement, stages A and B (DESIGN §2.2).
 
 ``python -m rhg.eval.pass_rate --stage A|B [--mock] [--n 16] [--limit N] [--generate-only | --grade-only]``
 

@@ -1,4 +1,4 @@
-"""CLI of the pre-registered analysis (subtask 14): ``python -m rhg.analysis.run --runs results/runs [--out results/analysis] [--confirmatory]``.
+"""CLI of the pre-registered analysis: ``python -m rhg.analysis.run --runs results/runs [--out results/analysis] [--confirmatory]``.
 
 Without ``--confirmatory`` every output is stamped EXPLORATORY. With it, the pre-registration check
 (``rhg.analysis.prereg_check``) must pass, else nothing is written and the exit code is 3; so does a study below the
