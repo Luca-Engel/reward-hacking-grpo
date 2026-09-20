@@ -29,3 +29,27 @@ def repo_root() -> Path:
 @pytest.fixture(scope="session")
 def config_dir(repo_root: Path) -> Path:
     return repo_root / "configs"
+
+
+@pytest.fixture(scope="session")
+def sim22(tmp_path_factory: pytest.TempPathFactory):
+    """The full 22-run design simulated with planted truth, analysed once through the CLI (shared by the analysis tests)."""
+    import json
+    from types import SimpleNamespace
+
+    import anafix
+
+    from rhg.analysis import run as analysis_run
+
+    root = tmp_path_factory.mktemp("sim22")
+    sim = anafix.simulate_dir(root / "sim", anafix.scenario())
+    repo = root / "repo"
+    repo.mkdir()
+    (repo / "DEVIATIONS.md").write_text("# DEVIATIONS\n\n| date | what | why | effect |\n|---|---|---|---|\n| 2099-01-01 | planted deviation row | test | none |\n",
+                                        encoding="utf-8")
+    out = root / "analysis"
+    code = analysis_run.main(["--runs", str(sim.runs), "--out", str(out), "--problems", str(sim.problems), "--repo-root", str(repo)])
+    assert code == 0
+    doc = json.loads((out / "tests.json").read_text(encoding="utf-8"))
+    return SimpleNamespace(root=root, sim=sim, runs=sim.runs, problems=sim.problems, truth=sim.truth, repo=repo, analysis=out, doc=doc,
+                           tests={t["id"]: t for t in doc["tests"]})
