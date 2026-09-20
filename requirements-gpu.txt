@@ -1,3 +1,19 @@
-# GPU stack pins (torch/transformers/trl/peft/vllm/accelerate/...).
-# Subtask 10 fills the exact pins. Installed on the GPU box by scripts/setup_box.sh via
-# `uv pip install -r requirements-gpu.txt`; deliberately NOT part of pyproject.toml / uv.lock.
+# GPU stack pins for GRPO with `use_vllm=True, vllm_mode="colocate"` + LoRA on one 24 GB GPU.
+# Installed on the GPU box by scripts/setup_box.sh via `uv pip install -r requirements-gpu.txt`;
+# deliberately NOT part of pyproject.toml / uv.lock. Rationale, risks and fallbacks: docs/GPU_COMPAT.md.
+#
+# One mutually compatible set (dependency-solver-checked with `uv pip compile --python-platform
+# x86_64-manylinux_2_28 --python-version 3.12`; never installed or run in the authoring environment):
+#   trl 1.13.0  -> vllm >=0.19.1,<=0.28.0 (its `vllm` extra)      vllm 0.28.0 -> torch ==2.13.0, transformers >=5.5.3
+# PyPI torch 2.13.0 is the CUDA 13.0 build (needs an NVIDIA driver >= 580); for older drivers see the cu129
+# fallback in docs/GPU_COMPAT.md. Install order: create a Python 3.12 venv, then this file in ONE command
+# (one resolver run, so vllm's torch pin decides torch); afterwards `uv pip freeze > results/bench/pip_freeze.txt`.
+# Transitive packages (tokenizers, huggingface-hub, flashinfer-python, torchvision, ...) are chosen by the resolver within
+# these pins' constraints; the freeze written after install records what was actually installed.
+torch==2.13.0
+vllm==0.28.0
+transformers==5.15.0
+trl==1.13.0
+peft==0.20.0
+accelerate==1.14.0
+datasets==5.0.1

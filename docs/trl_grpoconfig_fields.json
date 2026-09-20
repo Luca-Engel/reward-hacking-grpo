@@ -1,0 +1,1208 @@
+{
+ "_about": "Recorded by introspection (dataclasses.fields) of the pinned GRPOConfig / LoraConfig in a throwaway CPU environment with `uv run --no-project --isolated --python 3.12 --with trl==... python src/rhg/train/dump_trl_fields.py <out>` (exact pins in `versions`). Field names = every accepted constructor kwarg (GRPOConfig includes all inherited transformers.TrainingArguments fields). Regenerate whenever requirements-gpu.txt changes the trl/transformers/peft pins; tests/test_trl_mapping.py checks that the recorded versions equal the pins.",
+ "python": "3.12.11",
+ "versions": {
+  "trl": "1.13.0",
+  "peft": "0.20.0",
+  "transformers": "5.15.0",
+  "torch": "2.13.0",
+  "accelerate": "1.14.0",
+  "datasets": "5.0.1"
+ },
+ "GRPOConfig": {
+  "output_dir": {
+   "default": null,
+   "type": "str | None",
+   "init": true
+  },
+  "per_device_train_batch_size": {
+   "default": 8,
+   "type": "<class 'int'>",
+   "init": true
+  },
+  "num_train_epochs": {
+   "default": 3.0,
+   "type": "<class 'float'>",
+   "init": true
+  },
+  "max_steps": {
+   "default": -1,
+   "type": "<class 'int'>",
+   "init": true
+  },
+  "learning_rate": {
+   "default": 1e-06,
+   "type": "<class 'float'>",
+   "init": true
+  },
+  "lr_scheduler_type": {
+   "default": "linear",
+   "type": "transformers.trainer_utils.SchedulerType | str",
+   "init": true
+  },
+  "lr_scheduler_kwargs": {
+   "default": null,
+   "type": "dict | str | None",
+   "init": true
+  },
+  "warmup_steps": {
+   "default": 0,
+   "type": "<class 'float'>",
+   "init": true
+  },
+  "optim": {
+   "default": "adamw_torch_fused",
+   "type": "transformers.training_args.OptimizerNames | str",
+   "init": true
+  },
+  "optim_args": {
+   "default": null,
+   "type": "str | None",
+   "init": true
+  },
+  "weight_decay": {
+   "default": 0.0,
+   "type": "<class 'float'>",
+   "init": true
+  },
+  "adam_beta1": {
+   "default": 0.9,
+   "type": "<class 'float'>",
+   "init": true
+  },
+  "adam_beta2": {
+   "default": 0.999,
+   "type": "<class 'float'>",
+   "init": true
+  },
+  "adam_epsilon": {
+   "default": 1e-08,
+   "type": "<class 'float'>",
+   "init": true
+  },
+  "optim_target_modules": {
+   "default": null,
+   "type": "None | str | list[str]",
+   "init": true
+  },
+  "gradient_accumulation_steps": {
+   "default": 1,
+   "type": "<class 'int'>",
+   "init": true
+  },
+  "average_tokens_across_devices": {
+   "default": true,
+   "type": "<class 'bool'>",
+   "init": true
+  },
+  "max_grad_norm": {
+   "default": 1.0,
+   "type": "<class 'float'>",
+   "init": true
+  },
+  "label_smoothing_factor": {
+   "default": 0.0,
+   "type": "<class 'float'>",
+   "init": true
+  },
+  "bf16": {
+   "default": null,
+   "type": "bool | None",
+   "init": true
+  },
+  "fp16": {
+   "default": false,
+   "type": "<class 'bool'>",
+   "init": true
+  },
+  "bf16_full_eval": {
+   "default": false,
+   "type": "<class 'bool'>",
+   "init": true
+  },
+  "fp16_full_eval": {
+   "default": false,
+   "type": "<class 'bool'>",
+   "init": true
+  },
+  "tf32": {
+   "default": null,
+   "type": "bool | None",
+   "init": true
+  },
+  "gradient_checkpointing": {
+   "default": true,
+   "type": "<class 'bool'>",
+   "init": true
+  },
+  "gradient_checkpointing_kwargs": {
+   "default": null,
+   "type": "dict[str, typing.Any] | str | None",
+   "init": true
+  },
+  "torch_compile": {
+   "default": false,
+   "type": "<class 'bool'>",
+   "init": true
+  },
+  "torch_compile_backend": {
+   "default": null,
+   "type": "str | None",
+   "init": true
+  },
+  "torch_compile_mode": {
+   "default": null,
+   "type": "str | None",
+   "init": true
+  },
+  "use_liger_kernel": {
+   "default": false,
+   "type": "<class 'bool'>",
+   "init": true
+  },
+  "liger_kernel_config": {
+   "default": null,
+   "type": "dict[str, bool] | None",
+   "init": true
+  },
+  "use_cache": {
+   "default": false,
+   "type": "<class 'bool'>",
+   "init": true
+  },
+  "neftune_noise_alpha": {
+   "default": null,
+   "type": "float | None",
+   "init": true
+  },
+  "torch_empty_cache_steps": {
+   "default": null,
+   "type": "int | None",
+   "init": true
+  },
+  "auto_find_batch_size": {
+   "default": false,
+   "type": "<class 'bool'>",
+   "init": true
+  },
+  "logging_strategy": {
+   "default": "steps",
+   "type": "transformers.trainer_utils.IntervalStrategy | str",
+   "init": true
+  },
+  "logging_steps": {
+   "default": 10,
+   "type": "<class 'float'>",
+   "init": true
+  },
+  "logging_first_step": {
+   "default": false,
+   "type": "<class 'bool'>",
+   "init": true
+  },
+  "log_on_each_node": {
+   "default": true,
+   "type": "<class 'bool'>",
+   "init": true
+  },
+  "logging_nan_inf_filter": {
+   "default": true,
+   "type": "<class 'bool'>",
+   "init": true
+  },
+  "include_num_input_tokens_seen": {
+   "default": "no",
+   "type": "str | bool",
+   "init": true
+  },
+  "log_level": {
+   "default": "passive",
+   "type": "<class 'str'>",
+   "init": true
+  },
+  "log_level_replica": {
+   "default": "warning",
+   "type": "<class 'str'>",
+   "init": true
+  },
+  "disable_tqdm": {
+   "default": null,
+   "type": "bool | None",
+   "init": true
+  },
+  "report_to": {
+   "default": "none",
+   "type": "None | str | list[str]",
+   "init": true
+  },
+  "run_name": {
+   "default": null,
+   "type": "str | None",
+   "init": true
+  },
+  "project": {
+   "default": "huggingface",
+   "type": "<class 'str'>",
+   "init": true
+  },
+  "trackio_space_id": {
+   "default": null,
+   "type": "str | None",
+   "init": true
+  },
+  "trackio_bucket_id": {
+   "default": null,
+   "type": "str | None",
+   "init": true
+  },
+  "trackio_static_space_id": {
+   "default": null,
+   "type": "typing.Union[str, NoneType, typing.Literal[False]]",
+   "init": true
+  },
+  "eval_strategy": {
+   "default": "no",
+   "type": "transformers.trainer_utils.IntervalStrategy | str",
+   "init": true
+  },
+  "eval_steps": {
+   "default": null,
+   "type": "float | None",
+   "init": true
+  },
+  "eval_delay": {
+   "default": 0,
+   "type": "<class 'float'>",
+   "init": true
+  },
+  "per_device_eval_batch_size": {
+   "default": 8,
+   "type": "<class 'int'>",
+   "init": true
+  },
+  "prediction_loss_only": {
+   "default": false,
+   "type": "<class 'bool'>",
+   "init": true
+  },
+  "eval_on_start": {
+   "default": false,
+   "type": "<class 'bool'>",
+   "init": true
+  },
+  "eval_do_concat_batches": {
+   "default": true,
+   "type": "<class 'bool'>",
+   "init": true
+  },
+  "eval_use_gather_object": {
+   "default": false,
+   "type": "<class 'bool'>",
+   "init": true
+  },
+  "eval_accumulation_steps": {
+   "default": null,
+   "type": "int | None",
+   "init": true
+  },
+  "include_for_metrics": {
+   "default": [],
+   "default_factory": true,
+   "type": "list[str]",
+   "init": true
+  },
+  "batch_eval_metrics": {
+   "default": false,
+   "type": "<class 'bool'>",
+   "init": true
+  },
+  "save_only_model": {
+   "default": false,
+   "type": "<class 'bool'>",
+   "init": true
+  },
+  "save_strategy": {
+   "default": "steps",
+   "type": "transformers.trainer_utils.SaveStrategy | str",
+   "init": true
+  },
+  "save_steps": {
+   "default": 500,
+   "type": "<class 'float'>",
+   "init": true
+  },
+  "save_on_each_node": {
+   "default": false,
+   "type": "<class 'bool'>",
+   "init": true
+  },
+  "save_total_limit": {
+   "default": null,
+   "type": "int | None",
+   "init": true
+  },
+  "enable_jit_checkpoint": {
+   "default": false,
+   "type": "<class 'bool'>",
+   "init": true
+  },
+  "push_to_hub": {
+   "default": false,
+   "type": "<class 'bool'>",
+   "init": true
+  },
+  "hub_token": {
+   "default": null,
+   "type": "str | None",
+   "init": true
+  },
+  "hub_private_repo": {
+   "default": null,
+   "type": "bool | None",
+   "init": true
+  },
+  "hub_model_id": {
+   "default": null,
+   "type": "str | None",
+   "init": true
+  },
+  "hub_strategy": {
+   "default": "every_save",
+   "type": "transformers.trainer_utils.HubStrategy | str",
+   "init": true
+  },
+  "hub_always_push": {
+   "default": false,
+   "type": "<class 'bool'>",
+   "init": true
+  },
+  "hub_revision": {
+   "default": null,
+   "type": "str | None",
+   "init": true
+  },
+  "load_best_model_at_end": {
+   "default": false,
+   "type": "<class 'bool'>",
+   "init": true
+  },
+  "metric_for_best_model": {
+   "default": null,
+   "type": "str | None",
+   "init": true
+  },
+  "greater_is_better": {
+   "default": null,
+   "type": "bool | None",
+   "init": true
+  },
+  "ignore_data_skip": {
+   "default": false,
+   "type": "<class 'bool'>",
+   "init": true
+  },
+  "restore_callback_states_from_checkpoint": {
+   "default": false,
+   "type": "<class 'bool'>",
+   "init": true
+  },
+  "full_determinism": {
+   "default": false,
+   "type": "<class 'bool'>",
+   "init": true
+  },
+  "seed": {
+   "default": 42,
+   "type": "<class 'int'>",
+   "init": true
+  },
+  "data_seed": {
+   "default": null,
+   "type": "int | None",
+   "init": true
+  },
+  "use_cpu": {
+   "default": false,
+   "type": "<class 'bool'>",
+   "init": true
+  },
+  "accelerator_config": {
+   "default": null,
+   "type": "dict | str | None",
+   "init": true
+  },
+  "parallelism_config": {
+   "default": null,
+   "type": "accelerate.parallelism_config.ParallelismConfig | None",
+   "init": true
+  },
+  "dataloader_drop_last": {
+   "default": false,
+   "type": "<class 'bool'>",
+   "init": true
+  },
+  "dataloader_num_workers": {
+   "default": 0,
+   "type": "<class 'int'>",
+   "init": true
+  },
+  "dataloader_pin_memory": {
+   "default": true,
+   "type": "<class 'bool'>",
+   "init": true
+  },
+  "dataloader_persistent_workers": {
+   "default": false,
+   "type": "<class 'bool'>",
+   "init": true
+  },
+  "dataloader_prefetch_factor": {
+   "default": null,
+   "type": "int | None",
+   "init": true
+  },
+  "dataloader_multiprocessing_context": {
+   "default": null,
+   "type": "str | None",
+   "init": true
+  },
+  "dataloader_in_order": {
+   "default": true,
+   "type": "<class 'bool'>",
+   "init": true
+  },
+  "remove_unused_columns": {
+   "default": false,
+   "type": "bool | None",
+   "init": true
+  },
+  "label_names": {
+   "default": null,
+   "type": "list[str] | None",
+   "init": true
+  },
+  "train_sampling_strategy": {
+   "default": "random",
+   "type": "<class 'str'>",
+   "init": true
+  },
+  "length_column_name": {
+   "default": "length",
+   "type": "<class 'str'>",
+   "init": true
+  },
+  "ddp_find_unused_parameters": {
+   "default": null,
+   "type": "bool | None",
+   "init": true
+  },
+  "ddp_bucket_cap_mb": {
+   "default": null,
+   "type": "int | None",
+   "init": true
+  },
+  "ddp_broadcast_buffers": {
+   "default": null,
+   "type": "bool | None",
+   "init": true
+  },
+  "ddp_static_graph": {
+   "default": null,
+   "type": "bool | None",
+   "init": true
+  },
+  "ddp_backend": {
+   "default": null,
+   "type": "str | None",
+   "init": true
+  },
+  "ddp_timeout": {
+   "default": 1800,
+   "type": "<class 'int'>",
+   "init": true
+  },
+  "fsdp": {
+   "default": null,
+   "type": "str | None",
+   "init": true
+  },
+  "fsdp_config": {
+   "default": null,
+   "type": "dict[str, typing.Any] | str | None",
+   "init": true
+  },
+  "deepspeed": {
+   "default": null,
+   "type": "dict | str | None",
+   "init": true
+  },
+  "debug": {
+   "default": "",
+   "type": "str | list[transformers.debug_utils.DebugOption]",
+   "init": true
+  },
+  "skip_memory_metrics": {
+   "default": true,
+   "type": "<class 'bool'>",
+   "init": true
+  },
+  "do_train": {
+   "default": false,
+   "type": "<class 'bool'>",
+   "init": true
+  },
+  "do_eval": {
+   "default": false,
+   "type": "<class 'bool'>",
+   "init": true
+  },
+  "do_predict": {
+   "default": false,
+   "type": "<class 'bool'>",
+   "init": true
+  },
+  "resume_from_checkpoint": {
+   "default": null,
+   "type": "str | None",
+   "init": true
+  },
+  "local_rank": {
+   "default": -1,
+   "type": "<class 'int'>",
+   "init": true
+  },
+  "model_init_kwargs": {
+   "default": null,
+   "type": "dict[str, typing.Any] | str | None",
+   "init": true
+  },
+  "trust_remote_code": {
+   "default": false,
+   "type": "<class 'bool'>",
+   "init": true
+  },
+  "router_aux_loss_coef": {
+   "default": 0.001,
+   "type": "<class 'float'>",
+   "init": true
+  },
+  "disable_dropout": {
+   "default": false,
+   "type": "<class 'bool'>",
+   "init": true
+  },
+  "cast_lm_head_to_fp32": {
+   "default": false,
+   "type": "<class 'bool'>",
+   "init": true
+  },
+  "num_generations": {
+   "default": 8,
+   "type": "int | None",
+   "init": true
+  },
+  "num_generations_eval": {
+   "default": null,
+   "type": "int | None",
+   "init": true
+  },
+  "max_completion_length": {
+   "default": 512,
+   "type": "int | None",
+   "init": true
+  },
+  "ds3_gather_for_generation": {
+   "default": true,
+   "type": "<class 'bool'>",
+   "init": true
+  },
+  "shuffle_dataset": {
+   "default": true,
+   "type": "bool | None",
+   "init": true
+  },
+  "pad_to_multiple_of": {
+   "default": null,
+   "type": "int | None",
+   "init": true
+  },
+  "generation_batch_size": {
+   "default": null,
+   "type": "int | None",
+   "init": true
+  },
+  "steps_per_generation": {
+   "default": null,
+   "type": "int | None",
+   "init": true
+  },
+  "temperature": {
+   "default": 1.0,
+   "type": "<class 'float'>",
+   "init": true
+  },
+  "top_p": {
+   "default": 1.0,
+   "type": "<class 'float'>",
+   "init": true
+  },
+  "top_k": {
+   "default": 0,
+   "type": "<class 'int'>",
+   "init": true
+  },
+  "min_p": {
+   "default": null,
+   "type": "float | None",
+   "init": true
+  },
+  "generation_kwargs": {
+   "default": null,
+   "type": "dict | str | None",
+   "init": true
+  },
+  "chat_template_kwargs": {
+   "default": null,
+   "type": "dict | str | None",
+   "init": true
+  },
+  "repetition_penalty": {
+   "default": 1.0,
+   "type": "<class 'float'>",
+   "init": true
+  },
+  "cache_implementation": {
+   "default": null,
+   "type": "str | None",
+   "init": true
+  },
+  "use_vllm": {
+   "default": false,
+   "type": "<class 'bool'>",
+   "init": true
+  },
+  "vllm_mode": {
+   "default": "colocate",
+   "type": "<class 'str'>",
+   "init": true
+  },
+  "vllm_model_impl": {
+   "default": "vllm",
+   "type": "<class 'str'>",
+   "init": true
+  },
+  "vllm_enable_sleep_mode": {
+   "default": false,
+   "type": "<class 'bool'>",
+   "init": true
+  },
+  "vllm_structured_outputs_regex": {
+   "default": null,
+   "type": "str | None",
+   "init": true
+  },
+  "vllm_server_base_url": {
+   "default": null,
+   "type": "str | None",
+   "init": true
+  },
+  "vllm_server_host": {
+   "default": "0.0.0.0",
+   "type": "<class 'str'>",
+   "init": true
+  },
+  "vllm_server_port": {
+   "default": 8000,
+   "type": "<class 'int'>",
+   "init": true
+  },
+  "vllm_server_timeout": {
+   "default": 240.0,
+   "type": "<class 'float'>",
+   "init": true
+  },
+  "vllm_group_port": {
+   "default": 51216,
+   "type": "<class 'int'>",
+   "init": true
+  },
+  "vllm_gpu_memory_utilization": {
+   "default": 0.3,
+   "type": "<class 'float'>",
+   "init": true
+  },
+  "vllm_max_model_length": {
+   "default": null,
+   "type": "int | None",
+   "init": true
+  },
+  "vllm_tensor_parallel_size": {
+   "default": 1,
+   "type": "<class 'int'>",
+   "init": true
+  },
+  "beta": {
+   "default": 0.0,
+   "type": "<class 'float'>",
+   "init": true
+  },
+  "num_iterations": {
+   "default": 1,
+   "type": "<class 'int'>",
+   "init": true
+  },
+  "epsilon": {
+   "default": 0.2,
+   "type": "<class 'float'>",
+   "init": true
+  },
+  "delta": {
+   "default": null,
+   "type": "float | None",
+   "init": true
+  },
+  "epsilon_high": {
+   "default": null,
+   "type": "float | None",
+   "init": true
+  },
+  "sapo_temperature_neg": {
+   "default": 1.05,
+   "type": "<class 'float'>",
+   "init": true
+  },
+  "sapo_temperature_pos": {
+   "default": 1.0,
+   "type": "<class 'float'>",
+   "init": true
+  },
+  "vespo_k_pos": {
+   "default": 2.0,
+   "type": "<class 'float'>",
+   "init": true
+  },
+  "vespo_lambda_pos": {
+   "default": 3.0,
+   "type": "<class 'float'>",
+   "init": true
+  },
+  "vespo_k_neg": {
+   "default": 3.0,
+   "type": "<class 'float'>",
+   "init": true
+  },
+  "vespo_lambda_neg": {
+   "default": 2.0,
+   "type": "<class 'float'>",
+   "init": true
+  },
+  "importance_sampling_level": {
+   "default": "token",
+   "type": "<class 'str'>",
+   "init": true
+  },
+  "reward_weights": {
+   "default": null,
+   "type": "list[float] | None",
+   "init": true
+  },
+  "multi_objective_aggregation": {
+   "default": "sum_then_normalize",
+   "type": "<class 'str'>",
+   "init": true
+  },
+  "scale_rewards": {
+   "default": "group",
+   "type": "<class 'str'>",
+   "init": true
+  },
+  "loss_type": {
+   "default": "dapo",
+   "type": "<class 'str'>",
+   "init": true
+  },
+  "mask_truncated_completions": {
+   "default": false,
+   "type": "<class 'bool'>",
+   "init": true
+  },
+  "sync_ref_model": {
+   "default": false,
+   "type": "<class 'bool'>",
+   "init": true
+  },
+  "ref_model_mixup_alpha": {
+   "default": 0.6,
+   "type": "<class 'float'>",
+   "init": true
+  },
+  "ref_model_sync_steps": {
+   "default": 512,
+   "type": "<class 'int'>",
+   "init": true
+  },
+  "top_entropy_quantile": {
+   "default": 1.0,
+   "type": "<class 'float'>",
+   "init": true
+  },
+  "entropy_coef": {
+   "default": 0.0,
+   "type": "<class 'float'>",
+   "init": true
+  },
+  "use_adaptive_entropy": {
+   "default": false,
+   "type": "<class 'bool'>",
+   "init": true
+  },
+  "entropy_coef_min": {
+   "default": 0.0,
+   "type": "<class 'float'>",
+   "init": true
+  },
+  "entropy_coef_max": {
+   "default": 1.0,
+   "type": "<class 'float'>",
+   "init": true
+  },
+  "entropy_coef_delta": {
+   "default": 0.005,
+   "type": "<class 'float'>",
+   "init": true
+  },
+  "entropy_target": {
+   "default": 0.2,
+   "type": "<class 'float'>",
+   "init": true
+  },
+  "max_tool_calling_iterations": {
+   "default": null,
+   "type": "int | None",
+   "init": true
+  },
+  "vllm_importance_sampling_correction": {
+   "default": true,
+   "type": "<class 'bool'>",
+   "init": true
+  },
+  "vllm_importance_sampling_mode": {
+   "default": "sequence_mask",
+   "type": "<class 'str'>",
+   "init": true
+  },
+  "vllm_importance_sampling_clip_max": {
+   "default": 3.0,
+   "type": "float | None",
+   "init": true
+  },
+  "vllm_importance_sampling_clip_min": {
+   "default": null,
+   "type": "float | None",
+   "init": true
+  },
+  "off_policy_mask_threshold": {
+   "default": null,
+   "type": "float | None",
+   "init": true
+  },
+  "use_bias_correction_kl": {
+   "default": true,
+   "type": "<class 'bool'>",
+   "init": true
+  },
+  "log_completions": {
+   "default": false,
+   "type": "<class 'bool'>",
+   "init": true
+  },
+  "log_multimodal": {
+   "default": true,
+   "type": "<class 'bool'>",
+   "init": true
+  },
+  "num_completions_to_print": {
+   "default": null,
+   "type": "int | None",
+   "init": true
+  },
+  "log_unique_prompts": {
+   "default": false,
+   "type": "<class 'bool'>",
+   "init": true
+  },
+  "log_completions_hub_repo": {
+   "default": null,
+   "type": "str | None",
+   "init": true
+  },
+  "use_transformers_continuous_batching": {
+   "default": false,
+   "type": "<class 'bool'>",
+   "init": true
+  },
+  "transformers_continuous_batching_config": {
+   "default": null,
+   "type": "dict | str | None",
+   "init": true
+  },
+  "use_transformers_paged": {
+   "default": false,
+   "type": "<class 'bool'>",
+   "init": true
+  },
+  "vllm_importance_sampling_cap": {
+   "default": null,
+   "type": "float | None",
+   "init": true
+  }
+ },
+ "LoraConfig": {
+  "task_type": {
+   "default": null,
+   "type": "Optional[Union[str, TaskType]]",
+   "init": true
+  },
+  "peft_type": {
+   "default": null,
+   "type": "Optional[Union[str, PeftType]]",
+   "init": true
+  },
+  "auto_mapping": {
+   "default": null,
+   "type": "Optional[dict]",
+   "init": true
+  },
+  "peft_version": {
+   "default": null,
+   "type": "Optional[str]",
+   "init": true
+  },
+  "base_model_name_or_path": {
+   "default": null,
+   "type": "Optional[str]",
+   "init": true
+  },
+  "revision": {
+   "default": null,
+   "type": "Optional[str]",
+   "init": true
+  },
+  "inference_mode": {
+   "default": false,
+   "type": "bool",
+   "init": true
+  },
+  "r": {
+   "default": 8,
+   "type": "int",
+   "init": true
+  },
+  "target_modules": {
+   "default": null,
+   "type": "Optional[Union[list[str], str]]",
+   "init": true
+  },
+  "exclude_modules": {
+   "default": null,
+   "type": "Optional[Union[list[str], str]]",
+   "init": true
+  },
+  "lora_alpha": {
+   "default": 8,
+   "type": "int",
+   "init": true
+  },
+  "lora_dropout": {
+   "default": 0.0,
+   "type": "float",
+   "init": true
+  },
+  "fan_in_fan_out": {
+   "default": false,
+   "type": "bool",
+   "init": true
+  },
+  "bias": {
+   "default": "none",
+   "type": "Literal['none', 'all', 'lora_only']",
+   "init": true
+  },
+  "use_rslora": {
+   "default": false,
+   "type": "bool",
+   "init": true
+  },
+  "modules_to_save": {
+   "default": null,
+   "type": "Optional[list[str]]",
+   "init": true
+  },
+  "init_lora_weights": {
+   "default": true,
+   "type": "bool | Literal['gaussian', 'eva', 'olora', 'pissa', 'pissa_niter_[number of iters]', 'corda', 'loftq', 'orthogonal', 'mica']",
+   "init": true
+  },
+  "layers_to_transform": {
+   "default": null,
+   "type": "Optional[Union[list[int], int]]",
+   "init": true
+  },
+  "layers_pattern": {
+   "default": null,
+   "type": "Optional[Union[list[str], str]]",
+   "init": true
+  },
+  "rank_pattern": {
+   "default": {},
+   "default_factory": true,
+   "type": "Optional[dict]",
+   "init": true
+  },
+  "alpha_pattern": {
+   "default": {},
+   "default_factory": true,
+   "type": "Optional[dict]",
+   "init": true
+  },
+  "megatron_config": {
+   "default": null,
+   "type": "Optional[dict]",
+   "init": true
+  },
+  "megatron_core": {
+   "default": "megatron.core",
+   "type": "Optional[str]",
+   "init": true
+  },
+  "trainable_token_indices": {
+   "default": null,
+   "type": "Optional[Union[list[int], dict[str, list[int]]]]",
+   "init": true
+  },
+  "loftq_config": {
+   "default": {},
+   "default_factory": true,
+   "type": "Union[LoftQConfig, dict]",
+   "init": true
+  },
+  "eva_config": {
+   "default": null,
+   "type": "Optional[EvaConfig]",
+   "init": true
+  },
+  "corda_config": {
+   "default": null,
+   "type": "Optional[CordaConfig]",
+   "init": true
+  },
+  "lora_ga_config": {
+   "default": null,
+   "type": "Optional[LoraGAConfig]",
+   "init": true
+  },
+  "use_dora": {
+   "default": false,
+   "type": "bool",
+   "init": true
+  },
+  "velora_config": {
+   "default": null,
+   "type": "Optional[Union[VeloraConfig, dict]]",
+   "init": true
+  },
+  "alora_invocation_tokens": {
+   "default": null,
+   "type": "Optional[list[int]]",
+   "init": true
+  },
+  "use_qalora": {
+   "default": false,
+   "type": "bool",
+   "init": true
+  },
+  "qalora_group_size": {
+   "default": 16,
+   "type": "int",
+   "init": true
+  },
+  "monteclora_config": {
+   "default": null,
+   "type": "Optional[MontecloraConfig]",
+   "init": true
+  },
+  "layer_replication": {
+   "default": null,
+   "type": "Optional[list[tuple[int, int]]]",
+   "init": true
+  },
+  "runtime_config": {
+   "default": {
+    "__repr__": "LoraRuntimeConfig(ephemeral_gpu_offload=False)"
+   },
+   "default_factory": true,
+   "type": "LoraRuntimeConfig",
+   "init": true
+  },
+  "lora_bias": {
+   "default": false,
+   "type": "bool",
+   "init": true
+  },
+  "target_parameters": {
+   "default": null,
+   "type": "Optional[list[str]]",
+   "init": true
+  },
+  "use_bdlora": {
+   "default": null,
+   "type": "Optional[BdLoraConfig]",
+   "init": true
+  },
+  "arrow_config": {
+   "default": null,
+   "type": "Optional[ArrowConfig]",
+   "init": true
+  },
+  "ensure_weight_tying": {
+   "default": false,
+   "type": "bool",
+   "init": true
+  }
+ },
+ "postinit_probe_defaults": [
+  {
+   "per_device_train_batch_size": 4,
+   "gradient_accumulation_steps": 32,
+   "num_generations": 8,
+   "steps_per_generation": 32,
+   "generation_batch_size": 128
+  },
+  {
+   "per_device_train_batch_size": 8,
+   "gradient_accumulation_steps": 16,
+   "num_generations": 8,
+   "steps_per_generation": 16,
+   "generation_batch_size": 128
+  },
+  {
+   "per_device_train_batch_size": 2,
+   "gradient_accumulation_steps": 64,
+   "num_generations": 8,
+   "steps_per_generation": 64,
+   "generation_batch_size": 128
+  },
+  {
+   "per_device_train_batch_size": 4,
+   "gradient_accumulation_steps": 8,
+   "num_generations": 4,
+   "steps_per_generation": 8,
+   "generation_batch_size": 32
+  }
+ ],
+ "postinit_probe_explicit_steps_per_generation": {
+  "steps_per_generation": 32,
+  "generation_batch_size": 128,
+  "gradient_accumulation_steps": 1
+ }
+}
