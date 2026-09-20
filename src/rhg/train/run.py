@@ -17,7 +17,7 @@ step heartbeat stops for ``run.step_timeout_s`` (status ``failed``/``stall``, ex
 Exit codes: 0 ok, 1 failed/invalid, 2 usage/config error, 3 guard refused (budget / confirmatory), 75 stall.
 
 The backend is chosen with ``--backend {mock,trl}`` (``--mock`` implies ``mock``). The ``trl`` backend lives in
-``rhg.train.trl_trainer`` (subtask 11) and must expose ``create_backend(cfg, *, problems, prompts, run_dir)``
+``rhg.train.trl_trainer`` and exposes ``create_backend(cfg, *, problems, prompts, run_dir)``
 returning an ``rhg.train.backend.Backend``.
 """
 
@@ -42,7 +42,7 @@ from rhg.data.prompts import build_prompt, load_prompts_cfg, render_chat
 from rhg.env.monitor import make_monitor
 from rhg.eval.generate import SamplingParams, generate_for
 from rhg.seeds import derive_seed, seed_everything
-from rhg.train.backend import Backend, InvalidRunError, TrainContext
+from rhg.train.backend import Backend, InvalidRunError, RunFailedError, TrainContext
 from rhg.train.rollout_io import RolloutLogger, StepCounter, grade_to_records, make_reward_fn
 from rhg.train.watchdog import EXIT_STALL, Watchdog
 
@@ -70,15 +70,19 @@ def load_backend_factory(name: str) -> Callable[..., Backend]:
         except ModuleNotFoundError as e:
             if e.name != "rhg.train.trl_trainer":
                 raise
-            raise NotImplementedError(
-                "the 'trl' backend (rhg.train.trl_trainer) is owned by subtask 11 and is not implemented yet; "
-                "use --mock on this machine"
-            ) from e
+            raise NotImplementedError("the 'trl' backend (rhg.train.trl_trainer) is missing from this checkout") from e
         return create_backend
     raise ValueError(f"unknown backend {name!r}; expected 'mock' or 'trl'")
 
 
 # ------------------------------------------------------------------ data and schedule
+def read_jsonl(path: Path) -> list[dict[str, Any]]:
+    """One JSON object per *newline-terminated* line. ``str.splitlines`` must not be used here: it also splits on
+    U+2028/U+0085/form feeds, which occur inside the problem descriptions of the real dataset."""
+    with open(path, encoding="utf-8", newline="\n") as f:
+        return [json.loads(line) for line in f if line.strip()]
+
+
 def load_problems(cfg: Config, mock: bool) -> tuple[dict[str, dict[str, Any]], str]:
     """All problems of ``problems.jsonl`` by id. In mock mode a missing file falls back to the fixture set
     (``data/fixture/processed``), then to the built-in 8 tiny problems; the real backend never falls back."""
@@ -89,10 +93,10 @@ def load_problems(cfg: Config, mock: bool) -> tuple[dict[str, dict[str, Any]], s
     source = str(path)
     rows: list[dict[str, Any]]
     if path.is_file():
-        rows = [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
+        rows = read_jsonl(path)
     elif mock and (FIXTURE_PROCESSED / "problems.jsonl").is_file():
         source = str(FIXTURE_PROCESSED / "problems.jsonl")
-        rows = [json.loads(line) for line in Path(source).read_text(encoding="utf-8").splitlines() if line.strip()]
+        rows = read_jsonl(Path(source))
     elif mock:
         from rhg.data.fixture import tiny_problems
 
@@ -232,6 +236,8 @@ def estimate_run_usd(cfg: Config, mock: bool) -> float:
         return 0.0
     if BENCH_PATH.is_file():
         tp = budget_mod.load_throughput(BENCH_PATH)
+        if tp.mock:
+            raise budget_mod.BenchError(f"{BENCH_PATH} was written by `rhg.eval.bench --mock`; run the real bench (or delete it)")
         return budget_mod.run_cost(tp, cfg.grpo.max_steps, cfg.budget.usd_per_hour).run_usd
     return PLANNING_PRIOR_MAX_RUN_USD
 
@@ -248,6 +254,7 @@ def build_parser() -> argparse.ArgumentParser:
     ap.add_argument("--pilot", action="store_true", help="record the ledger entry as kind 'pilot' (pilot seeds are 9000+)")
     ap.add_argument("--ledger-mock", action="store_true", help="write a ledger entry even for a mock run")
     ap.add_argument("--force", action="store_true", help="overwrite an existing run directory")
+    ap.add_argument("--keep-adapters", action="store_true", help="keep the saved LoRA adapters (trl backend) after the evals")
     ap.add_argument("--config-dir", type=Path, default=Path("configs"))
     ap.add_argument("--repo-root", type=Path, default=None, help="repository root for provenance/guards (default: this repo)")
     return ap
@@ -408,7 +415,9 @@ def _execute(args, cfg: Config, mock, backend_name, factory, problems, data_sour
         eval_seed = derive_seed(cfg.run.seed, "eval")
         T = cfg.grpo.max_steps
         for step in plan["snapshots"]:
+            wd.beat(f"loading eval generator {step}")  # a fresh engine load can take minutes (trl: one per adapter)
             gen = backend.eval_generator(ctx.snapshots[step])
+            wd.beat(f"eval generator {step} ready")
             try:
                 common = dict(problems=problems, prompts=prompts, step=step, eval_seed=eval_seed, params=params,
                               monitor_fn=monitor_fn, acc=acc, writer=writer)
@@ -431,6 +440,8 @@ def _execute(args, cfg: Config, mock, backend_name, factory, problems, data_sour
 
         # phase 3: finalize
         progress.update(phase="finalize", step=T)
+        if not args.keep_adapters:
+            getattr(backend, "delete_snapshots", lambda: None)()
         step_writer.close()
         writer.close()
         wd.stop()
@@ -448,6 +459,9 @@ def _execute(args, cfg: Config, mock, backend_name, factory, problems, data_sour
     except InvalidRunError as e:
         print(f"[rhg.train.run] INVALID: {e.reason}", file=sys.stderr, flush=True)
         exit_code = _finish_bad(close_out, "invalid", e.reason, wd)
+    except RunFailedError as e:
+        traceback.print_exc()
+        exit_code = _finish_bad(close_out, "failed", e.reason, wd)
     except KeyboardInterrupt:
         print("[rhg.train.run] interrupted", file=sys.stderr, flush=True)
         exit_code = _finish_bad(close_out, "failed", "interrupted", wd, 130)

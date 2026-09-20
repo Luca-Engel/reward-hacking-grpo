@@ -25,6 +25,8 @@ hand-entered)::
     step_times_s            [float] wall seconds of every measured step (>= 3 entries)
     cache_hit_rate          float  optional; grading-cache hit rate during the bench
     exec_s_per_rollout_uncached float  optional; uncached figure for comparison
+    mock                    bool   optional; true = written by ``rhg.eval.bench --mock`` (not a measurement)
+    (any other key -- peak_gpu_mem_gib, t_eval_load_s, notes, ... -- is informational and ignored here)
 
 Formulas are BUDGET §2 exactly (``t_step`` from components; the median of ``step_times_s``
 from step 3 onward is reported as a cross-check and can be selected with
@@ -331,6 +333,7 @@ class Throughput:
     step_times_s: tuple[float, ...]
     cache_hit_rate: float | None = None
     exec_s_per_rollout_uncached: float | None = None
+    mock: bool = False
 
     @property
     def t_step_measured_s(self) -> float:
@@ -367,6 +370,7 @@ def parse_throughput(d: dict[str, Any]) -> Throughput:
     for opt in ("cache_hit_rate", "exec_s_per_rollout_uncached"):
         if d.get(opt) is not None:
             kw[opt] = _num(d, opt, positive=False)
+    kw["mock"] = d.get("mock") is True
     return Throughput(**kw)
 
 
@@ -608,6 +612,15 @@ def _cmd_cost_model(args: argparse.Namespace) -> int:
         print("error: --n-boxes and --T must be >= 1 and --usd-per-hour >= 0", file=sys.stderr)
         return EXIT_USAGE
     decision = Path(args.decision)
+    if tp.mock:
+        print("WARNING: the throughput file comes from `rhg.eval.bench --mock`; its numbers are NOT measurements.", file=sys.stderr)
+        if Path(args.out_md) == DEFAULT_MEASURED_MD or decision == DEFAULT_DECISION_MD:
+            print(
+                f"refused: a mock throughput file must not produce {DEFAULT_MEASURED_MD} / {DEFAULT_DECISION_MD}; "
+                "pass explicit --out-md and --decision paths (tests/dry runs only)",
+                file=sys.stderr,
+            )
+            return EXIT_GUARD
     if decision.exists() and not args.force:
         print(f"refused: {decision} already exists; pass --force to overwrite the decision file", file=sys.stderr)
         return EXIT_GUARD

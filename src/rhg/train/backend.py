@@ -22,6 +22,8 @@ watchdog heartbeat, evals, manifest and ledger. A backend only supplies the poli
     ``needs_prompt_meta`` the driver passes ``{"problem_id", "hint", "problem"}`` per prompt.
 ``Backend.close()``
     Final cleanup; always called.
+Optional: ``Backend.delete_snapshots()`` -- called by the driver after every eval succeeded, unless
+    ``--keep-adapters`` (TRL: removes the saved LoRA adapter directories; a failed run keeps them).
 
 Step numbering: training step ``k`` in 1..T; its rollouts come from the policy after ``k-1`` updates;
 the snapshot of step ``k`` is the policy after ``k`` updates and snapshot 0 is the untrained policy.
@@ -44,6 +46,14 @@ class InvalidRunError(RuntimeError):
 
     def __init__(self, reason: str) -> None:
         super().__init__(reason)
+        self.reason = reason
+
+
+class RunFailedError(RuntimeError):
+    """A backend failure with a stable status reason (e.g. ``oom``); the driver records status ``failed``."""
+
+    def __init__(self, reason: str, detail: str = "") -> None:
+        super().__init__(f"{reason}: {detail}" if detail else reason)
         self.reason = reason
 
 

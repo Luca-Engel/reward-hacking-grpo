@@ -215,8 +215,18 @@ class VLLMGenerator:
         return results
 
     def close(self) -> None:
-        """Best-effort release of the GPU memory held by the engine."""
-        self._llm = None
+        """Best-effort release of the GPU memory held by the engine (idempotent). vLLM's V1 engine core may live in
+        its own process; it is shut down explicitly (when the attribute exists) rather than left to ``__del__``,
+        because the post-hoc adapter evals (``rhg.train.trl_trainer``) start one engine after another."""
+        llm, self._llm = self._llm, None
+        core = getattr(getattr(llm, "llm_engine", None), "engine_core", None)
+        shutdown = getattr(core, "shutdown", None)
+        if callable(shutdown):
+            try:
+                shutdown()
+            except Exception:  # noqa: BLE001 - cleanup must never mask the real result/error
+                pass
+        del llm, core, shutdown
         gc.collect()
         try:
             import torch
