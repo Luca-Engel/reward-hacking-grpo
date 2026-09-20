@@ -59,3 +59,14 @@ judge:
   max_usd: 4.0
   max_flagged_per_run: 100
   audit_frac: 0.05
+# CPU mock policy only (rhg.train.mock_policy); ignored by real runs and excluded from config_hash.
+mock:
+  q: 0.9
+  displace: false
+  onset_jitter: 0.5
+  base_logit: -5.0
+  obf_gap: 1.5
+  lr: 6.0
+  honest_lr: 0.15
+  fault: none
+  fault_step: 3

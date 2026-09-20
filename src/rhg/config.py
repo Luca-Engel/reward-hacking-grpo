@@ -157,6 +157,20 @@ class JudgeCfg(_Block):
     audit_frac: Unit
 
 
+class MockCfg(_Block):
+    """Knobs of the CPU mock policy (``rhg.train.mock_policy``); ignored by real runs and not part of the config hash."""
+
+    q: Unit  # per-seed probability that the mock policy is able to discover run_tests
+    displace: bool  # allow the obfuscated define form (H4 code paths)
+    onset_jitter: NonNegFloat  # sd of the per-seed jitter of the initial define logit
+    base_logit: Annotated[float, Field(strict=True)]  # initial define logit at hint level "subtle"
+    obf_gap: NonNegFloat  # obfuscated form starts this many logits below the plain form
+    lr: PosFloat  # step size of the policy-mode logits
+    honest_lr: NonNegFloat  # step size of the per-problem honest-success logits
+    fault: Literal["none", "stall", "nan_loss", "nan_reward", "raise"]  # test hook: injected failure
+    fault_step: PosInt
+
+
 class Config(_Block):
     run: RunCfg
     arm: ArmCfg
@@ -170,6 +184,7 @@ class Config(_Block):
     sandbox: SandboxCfg
     budget: BudgetCfg
     judge: JudgeCfg
+    mock: MockCfg
 
     @property
     def rollouts_per_step(self) -> int:
@@ -183,6 +198,7 @@ class Config(_Block):
         dump = self.model_dump(mode="json")
         for key in excluded_run_keys:
             dump["run"].pop(key)
+        dump.pop("mock")
         canonical = json.dumps(dump, sort_keys=True, separators=(",", ":"), ensure_ascii=True)
         return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
 

@@ -164,9 +164,17 @@ def test_config_hash_changes_with_any_hyperparameter(override, cdir):
     assert changed.config_hash != base.config_hash
 
 
+def test_mock_block_is_overridable_and_not_hashed(cdir):
+    base = load_config("hackable_subtle", config_dir=cdir)
+    c = load_config("hackable_subtle", ["mock.q=1", "mock.displace=true"], config_dir=cdir)
+    assert (c.mock.q, c.mock.displace) == (1.0, True)
+    assert c.config_hash == base.config_hash and c.run_hash == base.run_hash
+
+
 def test_hashes_match_manual_canonical_json(cdir):
     c = load_config("clean_subtle", seed=2, config_dir=cdir)
     dump = c.model_dump(mode="json")
+    dump.pop("mock")  # CPU-mock knobs are not part of the recipe hash (SPEC_DEVIATIONS 09)
     dump["run"] = {k: v for k, v in dump["run"].items() if k not in ("seed", "output_root", "mode", "tag")}
     canon = json.dumps(dump, sort_keys=True, separators=(",", ":"))
     assert c.config_hash == hashlib.sha256(canon.encode()).hexdigest()
