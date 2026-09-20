@@ -24,6 +24,7 @@ dev = [
     "nbconvert",
     "ipykernel",
     "jupyter",
+    "tokenizers>=0.23.2",
 ]
 
 [build-system]
