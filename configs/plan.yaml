@@ -1,0 +1,38 @@
+# Run plan (DESIGN §3, PREREG §1, BUDGET §4). Read by `rhg.plan`; the ladder itself lives in
+# `rhg.budget.LADDER` (single source of truth) and `rhg.plan` refuses a plan whose seed counts differ from ladder step 0.
+
+# Seeds per arm at the full design (22 runs). Seeds are 0..n-1 (primary arms: see `primary`).
+arms:
+  clean_none: 2
+  clean_subtle: 5
+  clean_explicit: 2
+  hackable_none: 2
+  hackable_subtle: 5
+  hackable_explicit: 3
+  hackable_subtle_ast: 3
+
+# Tier 0 = the primary contrast, launched as H/C pairs by seed. The order of the seeds is a pre-declared
+# shuffle: seeds are sorted by rhg.seeds.derive_seed(shuffle_seed, "primary_order:<seed>"). The hackable/clean order
+# inside a pair alternates so that round-robin sharding puts both arms on every box. The last pair in this order is
+# the one cut at ladder step 6 (5 v 5 -> 4 v 4).
+primary:
+  hackable: hackable_subtle
+  clean: clean_subtle
+  shuffle_seed: 20260920
+
+# Tiers 1.. in launch order after tier 0 (BUDGET §4). Within an arm, seeds run in ascending order, so every ladder
+# step is a prefix of this list per arm.
+tail:
+  - hackable_explicit
+  - clean_explicit
+  - hackable_subtle_ast
+  - clean_none
+  - hackable_none
+
+# Infrastructure replacements (DESIGN §7.2): seeds seed_base+k for k < max_total, only for invalid/failed runs.
+replacement:
+  seed_base: 100
+  max_total: 3
+
+# Pilots (seeds >= pilot_seed_min) are never part of the plan.
+pilot_seed_min: 9000
