@@ -18,8 +18,50 @@ abstract: "A small-scale (Qwen3-1.7B, LoRA-GRPO, at most 5 seeds per arm), pre-r
 # date-released: "<YYYY-MM-DD>"
 # commit: "<prereg-v1 commit hash>"
 references:
-  - type: article
+  - type: generic
     title: "Steering RL Training: Benchmarking Interventions Against Reward Hacking"
     authors:
-      - name: "Wong et al. (author list to be verified before citing)"
-    notes: "LessWrong / Alignment Forum post; code: ariahw/rl-rewardhacking; an ICLR 2026 workshop version exists (title and authors to be verified)."
+      - name: "Aria Wong"
+      - name: "Josh Engels"
+      - name: "Neel Nanda"
+    date-released: "2025-12-29"
+    url: "https://www.lesswrong.com/posts/R5MdWGKsuvdPwGFBG/steering-rl-training-benchmarking-interventions-against"
+    notes: "LessWrong / Alignment Forum post; code: ariahw/rl-rewardhacking; ICLR 2026 workshop version \"Mitigating Reward Hacking with RL Training Interventions\", same authors."
+  - type: article
+    title: "Monitoring Reasoning Models for Misbehavior and the Risks of Promoting Obfuscation"
+    authors:
+      - name: "Bowen Baker"
+      - name: "et al."
+    year: 2025
+    identifiers:
+      - type: other
+        value: "arXiv:2503.11926"
+  - type: article
+    title: "Natural Emergent Misalignment from Reward Hacking in Production RL"
+    authors:
+      - name: "Monte MacDiarmid"
+      - name: "et al."
+    year: 2025
+    identifiers:
+      - type: other
+        value: "arXiv:2511.18397"
+  - type: article
+    title: "ImpossibleBench: Measuring LLMs' Propensity of Exploiting Test Cases"
+    authors:
+      - name: "Ziqian Zhong"
+      - name: "Aditi Raghunathan"
+      - name: "Nicholas Carlini"
+    year: 2025
+    identifiers:
+      - type: other
+        value: "arXiv:2510.20270"
+  - type: article
+    title: "When Reward Hacking Rebounds: Understanding and Mitigating It with Representation-Level Signals"
+    authors:
+      - name: "Rui Wu"
+      - name: "Ruixiang Tang"
+    year: 2026
+    identifiers:
+      - type: other
+        value: "arXiv:2604.01476"
+    notes: "\"the rebound paper\"; title is inconsistent between the arXiv abstract page and the rendered HTML page as of verification — confirm before citing."

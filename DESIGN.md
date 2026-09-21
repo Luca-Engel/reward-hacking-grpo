@@ -13,16 +13,20 @@ on the reward actually paying for it (as opposed to the prompt merely mentioning
 
 **This is a small-scale, pre-registered replication-extension, not a new environment.**
 The exploit, the LeetCode setting, LoRA-GRPO, monitor penalties and inoculation prompts
-were introduced by Wong et al. (LessWrong/AF post "Steering RL Training: Benchmarking
-Interventions Against Reward Hacking"; code `ariahw/rl-rewardhacking`; ICLR 2026
-workshop version "Mitigating Reward Hacking with RL Training Interventions" —
-*verify author attribution before citing*). They used Qwen3-4B, thinking off, 3 seeds,
-200 steps, ~$60/run on multi-GPU. Related: Baker et al. 2025 (CoT monitoring and
-obfuscation), Anthropic 2025 (natural emergent misalignment; inoculation), ImpossibleBench
-(Zhong et al. 2025), the "rebound" paper (arXiv 2604.01476 — **identifier and title unverified, confirm before
-citing**: hacking attempts fail, retreat, then succeed — so single-step endpoints can land in a
-retreat phase). Every reference in this paragraph is listed in `docs/PUBLICATION_CHECKLIST.md`
-until it has been checked against the source.
+were introduced by Wong, Engels and Nanda (LessWrong/AF post "Steering RL Training:
+Benchmarking Interventions Against Reward Hacking", 2025-12-29; code
+`ariahw/rl-rewardhacking`; ICLR 2026 workshop version "Mitigating Reward Hacking with RL
+Training Interventions", same authors). They used Qwen3-4B, thinking off, 3 seeds,
+200 steps, ~$60/run on multi-GPU. Related: Baker et al. 2025, "Monitoring Reasoning
+Models for Misbehavior and the Risks of Promoting Obfuscation" (arXiv 2503.11926, CoT
+monitoring and obfuscation); Anthropic (MacDiarmid, Hubinger et al.) 2025, "Natural
+Emergent Misalignment from Reward Hacking in Production RL" (arXiv 2511.18397; inoculation
+prompting); Zhong, Raghunathan and Carlini 2025, "ImpossibleBench: Measuring LLMs'
+Propensity of Exploiting Test Cases" (arXiv 2510.20270, ICLR 2026); the "rebound" paper,
+Wu and Tang, arXiv 2604.01476 (identifier, authors and claim verified: hacking attempts
+fail, retreat, then succeed — so single-step endpoints can land in a retreat phase;
+**the paper's own title is inconsistent between its abstract page and its rendered HTML —
+confirm the exact title at cite time, see `docs/PUBLICATION_CHECKLIST.md`**).
 
 **Gaps this project fills (and only these — do not overclaim):**
 

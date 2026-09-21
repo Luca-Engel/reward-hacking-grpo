@@ -156,11 +156,15 @@ existing work at a fraction of its compute, not a new environment and not a clai
 
 ## Credit and related work
 
-- Wong et al., "Steering RL Training: Benchmarking Interventions Against Reward Hacking" (LessWrong / AF) and the ICLR 2026 workshop
-  version (*verify author attribution before citing*): the `run_tests()` exploit, the LeetCode setting, LoRA-GRPO, monitor penalties,
-  inoculation prompts; hint wordings here are adapted from their "minimal mention" and "aware" variants. No code was copied from
-  `ariahw/rl-rewardhacking`.
-- Baker et al. 2025 (chain-of-thought monitoring and obfuscation); Anthropic 2025 (natural emergent misalignment from reward hacking;
-  inoculation); Zhong et al. 2025 (ImpossibleBench); arXiv 2604.01476 ("rebound": hacking attempts fail, retreat, then succeed).
+- Wong, Engels and Nanda, "Steering RL Training: Benchmarking Interventions Against Reward Hacking" (LessWrong / AF, 2025-12-29) and
+  the ICLR 2026 workshop version, "Mitigating Reward Hacking with RL Training Interventions" (same authors): the `run_tests()`
+  exploit, the LeetCode setting, LoRA-GRPO, monitor penalties, inoculation prompts; hint wordings here are adapted from their
+  "minimal mention" and "aware" variants. No code was copied from `ariahw/rl-rewardhacking`.
+- Baker et al. 2025, "Monitoring Reasoning Models for Misbehavior and the Risks of Promoting Obfuscation" (arXiv 2503.11926;
+  chain-of-thought monitoring and obfuscation); Anthropic (MacDiarmid, Hubinger et al.) 2025, "Natural Emergent Misalignment from
+  Reward Hacking in Production RL" (arXiv 2511.18397; inoculation); Zhong, Raghunathan and Carlini 2025, "ImpossibleBench: Measuring
+  LLMs' Propensity of Exploiting Test Cases" (arXiv 2510.20270, ICLR 2026); Wu and Tang, arXiv 2604.01476 ("rebound": hacking
+  attempts fail, retreat, then succeed — the paper's title differs between its abstract page and rendered HTML, confirm before
+  citing).
 - Qwen3 (Apache-2.0), `newfacade/LeetCodeDataset`, TRL, vLLM and PEFT.
 - Write-up skeleton: [`docs/WRITEUP_TEMPLATE.md`](docs/WRITEUP_TEMPLATE.md). Citation metadata: [`CITATION.cff`](CITATION.cff). License: MIT.
