@@ -197,6 +197,43 @@ def test_run_all_refuses_without_the_prereg_tag_ancestor(tmp_path):
     assert r.returncode == 3 and "prereg-v1" in r.stderr
 
 
+def _tagged_checkout(dst: Path) -> Path:
+    """A git checkout with the scripts, one commit and an annotated prereg-v1 tag (an ancestor of HEAD), no remote."""
+    from fakerepo import git as fgit
+
+    chk = _checkout(dst)
+    (chk / "README.txt").write_text("x", encoding="utf-8")
+    fgit(chk, "init", "-q")
+    fgit(chk, "add", "-A")
+    fgit(chk, "commit", "-q", "-m", "c")
+    fgit(chk, "tag", "-a", "prereg-v1", "-m", "freeze")
+    return chk
+
+
+@needs_bash
+def test_run_all_refuses_unless_the_prereg_tag_is_on_origin(tmp_path):
+    """The public push is the third-party timestamp: a tag that only exists locally must not start confirmatory runs."""
+    from fakerepo import git as fgit
+
+    if shutil.which("nvidia-smi"):
+        pytest.skip("a real GPU would get past the guard and start training")
+    chk = _tagged_checkout(tmp_path / "chk")
+    r = sh(chk / "scripts" / "run_all.sh", cwd=chk)  # no remote at all
+    assert r.returncode == 3 and "origin" in r.stderr
+    bare = tmp_path / "origin.git"
+    fgit(tmp_path, "init", "-q", "--bare", str(bare))
+    fgit(chk, "remote", "add", "origin", str(bare))
+    r = sh(chk / "scripts" / "run_all.sh", cwd=chk)  # a remote that does not have the tag
+    assert r.returncode == 3 and "origin" in r.stderr
+    fgit(chk, "push", "-q", "origin", "HEAD:refs/heads/main")
+    fgit(chk, "push", "-q", "origin", "prereg-v1")
+    r = sh(chk / "scripts" / "run_all.sh", cwd=chk)  # pushed: this guard passes, the next one (no GPU on this machine) stops it
+    assert r.returncode != 3 and "no NVIDIA GPU" in r.stderr, r.stderr
+    fgit(chk, "tag", "-f", "-a", "prereg-v1", "-m", "moved locally")  # same name, different object than the published one
+    r = sh(chk / "scripts" / "run_all.sh", cwd=chk)
+    assert r.returncode == 3 and "origin" in r.stderr
+
+
 @needs_bash
 def test_run_arm_guards():
     r = sh(SCRIPTS / "run_arm.sh", "hackable_subtle", "0", "--dry-run")

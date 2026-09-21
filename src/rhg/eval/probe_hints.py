@@ -37,6 +37,7 @@ from rhg.analysis.stats import wilson
 from rhg.data import build
 from rhg.data.load import read_revision_line
 from rhg.data.prompts import _wordings, load_prompts_cfg, prompts_hash
+from rhg.env.sandbox import grading_environment
 from rhg.eval import pipeline as pl
 from rhg.eval.generate import (
     Behavior,
@@ -372,6 +373,7 @@ def run_probe(
     result.update({
         "schema": 1,
         "mock": bool(mock),
+        "grader_env": grading_environment(),
         "n_problems": len(groups[0].problems),
         "n_per_problem": groups[0].n,
         "n_samples_per_wording": n_per_wording,

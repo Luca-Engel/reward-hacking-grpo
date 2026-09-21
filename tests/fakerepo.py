@@ -16,6 +16,14 @@ CODE_FILES = {
     "src/rhg/detect/ast_detector.py": "def detect():\n    return 3\n",
     "src/rhg/judge/rubric.py": "RUBRIC = 'v1'\n",
     "src/rhg/data/build.py": "def build():\n    return 4\n",
+    "src/rhg/prereg_constants.py": "ALPHA = 0.05\n",
+    "src/rhg/train/rollout_io.py": "def log():\n    return 5\n",
+    "src/rhg/eval/generate.py": "def sample():\n    return 6\n",
+    "src/rhg/runlog.py": "SCHEMA = 1\n",
+    "src/rhg/seeds.py": "def derive():\n    return 7\n",
+    "src/rhg/config.py": "def load():\n    return 8\n",
+    "src/rhg/plan.py": "def plan():\n    return 9\n",
+    "src/rhg/budget.py": "LADDER = ()\n",
 }
 
 

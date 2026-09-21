@@ -19,8 +19,10 @@ workshop version "Mitigating Reward Hacking with RL Training Interventions" —
 *verify author attribution before citing*). They used Qwen3-4B, thinking off, 3 seeds,
 200 steps, ~$60/run on multi-GPU. Related: Baker et al. 2025 (CoT monitoring and
 obfuscation), Anthropic 2025 (natural emergent misalignment; inoculation), ImpossibleBench
-(Zhong et al. 2025), the "rebound" paper (arXiv 2604.01476: hacking attempts fail, retreat,
-then succeed — so single-step endpoints can land in a retreat phase).
+(Zhong et al. 2025), the "rebound" paper (arXiv 2604.01476 — **identifier and title unverified, confirm before
+citing**: hacking attempts fail, retreat, then succeed — so single-step endpoints can land in a
+retreat phase). Every reference in this paragraph is listed in `docs/PUBLICATION_CHECKLIST.md`
+until it has been checked against the source.
 
 **Gaps this project fills (and only these — do not overclaim):**
 
@@ -237,7 +239,11 @@ always beside per-seed dot plots. Proportions of seeds that "emerged" carry Wils
   (m=4).** H4a is reported with its exact p but is *outside* the family: at 3 v 5 seeds
   its minimum attainable p is 0.018 > α/m, so it is structurally unrejectable under any
   Holm ordering where it is smallest. Everything else is **EXPLORATORY** and is labelled so
-  automatically in every figure/table title.
+  automatically in every figure/table title. The primary and this family are separate error
+  budgets (§8 item 22). H1 is only powered for a strict dose ordering (§8 item 21; PREREG §3
+  pre-declares how a plateau non-rejection is worded). The unpaired test ignores that seed k
+  shares data order and LoRA init across the primary arms; a paired sign-flip companion is
+  reported as exploratory (§8 item 23).
 
 **Minimum attainable p and the emergence-probability structure** (verified by unit tests in
 `analysis/power.py`, which must enumerate exactly). With the clean arm at ~0 and hackable
@@ -274,10 +280,14 @@ about "reward hacking in general".
    after any outcome is seen.
 4. **Health-only interim monitoring** (run validity, cost, step time, honest reward
    learning). No arm-vs-arm hack-rate comparison is computed before the analysis run.
-5. The analysis is run once on the full data. **Measurement code is frozen at tag
+5. The analysis is run once on the full data. **Measurement and decision code is frozen at tag
    `prereg-v1`** by group hash: analysis (`src/rhg/analysis/`), grader/labels
-   (`src/rhg/env/`), detectors (`src/rhg/detect/`), the judge rubric, and data-build code,
-   plus configs, prompts, split, dataset revision and dependency pins. Any later change
+   (`src/rhg/env/`), detectors (`src/rhg/detect/`), the judge rubric, data-build code, the
+   decision constants (`src/rhg/prereg_constants.py`), the trainer and rollout logging
+   (`src/rhg/train/`), the eval sampler and grading path (`src/rhg/eval/`), the log
+   schema/validator (`src/rhg/runlog.py`), seed derivation, config schema, run plan and
+   budget ladder, plus configs (including `configs/plan.yaml`), prompts, split, dataset
+   revision and dependency pins. Any later change
    must be recorded with `python -m rhg.analysis.prereg_check --amend --reason "..."`
    (tracked `prereg/AMENDMENTS.jsonl`) and in `DEVIATIONS.md`; the report prints every
    amendment. Un-amended drift makes confirmatory analysis refuse to run.
@@ -328,7 +338,22 @@ about "reward hacking in general".
     more than 5 pp.
 20. **Reproducibility across boxes:** the grading cache is content-addressed on raw
     execution outputs only and versioned, so it cannot leak arm behaviour; exit code 75
-    (stall watchdog) marks infrastructure failures for replacement, not outcomes.
+    (stall watchdog) marks infrastructure failures for replacement, not outcomes. **Grading
+    environment:** the sandbox enforces its memory/CPU limits on POSIX only, so base-model pass
+    rates (band selection, the H2 covariate) and the hint probe must be graded on Linux like the
+    training/eval rewards. `rhg.eval` refuses to grade real completions elsewhere, every stats file
+    records `grader_env` (platform, Python, `limits_enforced`), and Gate 1c FAILs on files graded
+    without enforced limits.
+21. **H1 has almost no power in the plateau regime** (subtle and explicit both hack at similar
+    rates, exactly the regime in which the primary has power): the confirmatory H1 tests are
+    then near-unrejectable at α/m → pre-declared in PREREG §3 as "not informative about
+    dose-response", never as evidence against it; `rhg.analysis.power` prints the scenario table.
+22. **Two error budgets:** the primary (α = 0.05) and the secondary Holm family (α = 0.05) are not
+    gated on each other, so the familywise error over all five confirmatory tests is not held at
+    0.05 → claims about a secondary hypothesis name their own family (PREREG §4).
+23. **Seed pairing:** seed k of both primary arms shares data order and LoRA init, which the
+    pre-registered unpaired permutation test ignores (valid, slightly conservative); an exact
+    paired sign-flip companion (2^5 relabelings, min p = 1/32) is reported as EXPLORATORY only.
 
 ## 9. What we will NOT claim
 Causal claims about hacking in frontier models; that monitors "don't work"; that the

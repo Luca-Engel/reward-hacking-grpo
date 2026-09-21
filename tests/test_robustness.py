@@ -318,3 +318,18 @@ def test_training_health_flags_other_failure_modes():
     text = " | ".join(health["flags"]["hackable_subtle"])
     assert "truncation rate rose" in text and "code-extraction failures rose" in text and "completion length fell" in text
     assert "almost no learning signal" in text and "NOT LEARNING" not in text
+
+
+def test_paired_companion_pairs_by_seed_and_matches_hand_enumeration():
+    ids = [f"t{i}" for i in range(4)]
+    hack = [anafix.fake_run("hackable_subtle", s, {p: k for p in ids}) for s, k in enumerate([8, 1, 1, 1, 1])]  # rates 1, .125 x4
+    clean = [anafix.fake_run("clean_subtle", s, {p: k for p in ids}) for s, k in enumerate([0, 0, 0, 2, 2])]  # rates 0 x3, .25 x2
+    pr = robustness.rank_test(hack + clean)["paired"]
+    d = [1.0 - 0.0, .125 - 0.0, .125 - 0.0, .125 - .25, .125 - .25]
+    obs = sum(d) / 5
+    hits = sum(1 for s in itertools.product((1, -1), repeat=5) if sum(si * di for si, di in zip(s, d)) / 5 >= obs - 1e-12)
+    assert pr["available"] and pr["seeds"] == [0, 1, 2, 3, 4] and pr["n_pairs"] == 5 and pr["n_unpaired"] == 0
+    assert pr["p"] == pytest.approx(hits / 32) and pr["min_p"] == pytest.approx(1 / 32) and pr["delta"] == pytest.approx(obs)
+    # an unpaired seed is reported, not silently dropped
+    extra = anafix.fake_run("hackable_subtle", 7, {p: 1 for p in ids})
+    assert robustness.rank_test(hack + clean + [extra])["paired"]["n_unpaired"] == 1

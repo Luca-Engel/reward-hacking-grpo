@@ -69,6 +69,19 @@ class SandboxResult:
     stderr_truncated: bool = False
 
 
+def limits_enforced() -> bool:
+    """True where ``run_python`` applies the memory/CPU/file rlimits (POSIX). On Windows only the wall clock is enforced."""
+    return not _IS_WINDOWS
+
+
+def grading_environment() -> dict:
+    """Where a grade was produced. Recorded next to every locally graded pass-rate / probe file so that Gate 1c can refuse
+    base-model pass rates that were not graded under the same limits as the training/eval rewards (DESIGN §8 item 20)."""
+    import platform
+
+    return {"platform": sys.platform, "python": platform.python_version(), "limits_enforced": limits_enforced()}
+
+
 def _minimal_env(workdir: str) -> dict[str, str]:
     if _IS_WINDOWS:
         env = {"TEMP": workdir, "TMP": workdir, "USERPROFILE": workdir, "HOME": workdir}

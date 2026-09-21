@@ -5,7 +5,8 @@
 # BUDGET_MEASURED.md; without a bench the UNVERIFIED planning-prior ceiling), launches scripts/run_arm.sh (--confirmatory), and
 # continues past failures. Exit 75 (stall watchdog), OOM and other invalid/failed runs are handled by `rhg.plan replacement`
 # (seeds 100+k, hard cap 3 in total across boxes: shard i of n uses k = i-1 mod n; validity only, never outcomes).
-# Refuses to launch unless the prereg-v1 tag is an ancestor of HEAD (with --dry-run this is only a warning).
+# Refuses to launch unless the prereg-v1 tag is an ancestor of HEAD AND the same tag is on the `origin` remote (with --dry-run
+# these are only warnings): the public push is the third-party timestamp of the pre-registration.
 # All boxes must use the same --ladder N (BUDGET §4). --stale-after 0 marks every 'running' run invalid at start (only when no
 # other process trains on this box); the default treats a status not rewritten for 30 min as a killed/preempted run.
 # Writes results/RUNS_HEALTH.md: status/steps/wall/usd/final TRAIN reward per run. Nobody looks at hack rate by arm.
@@ -43,6 +44,13 @@ elif [[ "$DRY_RUN" == 1 ]]; then
   warn "prereg-v1 is not an ancestor of HEAD: a real run would REFUSE here (dry-run continues)"
 else
   refuse "the git tag prereg-v1 is not an ancestor of HEAD. Freeze with scripts/freeze_prereg.sh, push the commit and the tag, and set this box up from a checkout that contains the tag."
+fi
+if prereg_tag_pushed; then
+  log "prereg-v1 is on origin (same tag object): the freeze timestamp is publicly checkable"
+elif [[ "$DRY_RUN" == 1 ]]; then
+  warn "prereg-v1 is not on origin: a real run would REFUSE here (dry-run continues)"
+else
+  refuse "the tag prereg-v1 is not on the 'origin' remote (or differs from it). Push it first: git push origin HEAD && git push origin prereg-v1. The public push is the third-party timestamp of the pre-registration."
 fi
 if ! gpu_present; then
   if [[ "$DRY_RUN" == 1 ]]; then warn "no NVIDIA GPU detected; continuing because of --dry-run"; else die "no NVIDIA GPU detected"; fi

@@ -3,7 +3,11 @@
 ``prereg/FREEZE.json`` records, at the ``prereg-v1`` tag: per-arm ``config_hash``, the sha256
 of ``configs/prompts.yaml``, split hash, dataset revision, sha256 of ``requirements-gpu.txt``,
 the frozen hyperparameters/hint selection and one sha256 per *measurement-code group*
-(``analysis``, ``env``, ``detect``, ``judge_rubric``, ``data_build``).
+(see ``CODE_GROUPS``: the analysis, the grader/labels, the detectors, the judge rubric, the data build, and every module that
+decides what the logs mean or which runs exist: ``constants`` (alpha, Delta, thresholds, contrasts), ``training`` (reward wiring,
+GRPO mapping, rollout logging, eval schedule), ``eval`` (eval sampling and grading path), ``runlog``, ``seeds``, ``config``,
+``plan`` and ``budget``), plus the sha256 of ``configs/plan.yaml`` (seed counts and the pre-declared shuffle that decides which
+primary pair the cut ladder drops first).
 
 ``check`` recomputes everything from the working tree and reports one pass/fail item per
 recorded value; a mismatch names the item (e.g. ``code:analysis``). Post-tag changes must be
@@ -64,7 +68,19 @@ CODE_GROUPS: dict[str, str] = {
     "detect": "src/rhg/detect",
     "judge_rubric": "src/rhg/judge/rubric.py",
     "data_build": "src/rhg/data",
+    # Everything below decides what a confirmatory number means without being "analysis code": the decision constants, the
+    # trainer/eval path that produces the logged labels, the log schema that decides which runs are valid, the seed derivation
+    # and the run plan / cut ladder. Editing any of them after the tag needs a logged amendment (DESIGN §7.5).
+    "constants": "src/rhg/prereg_constants.py",
+    "training": "src/rhg/train",
+    "eval": "src/rhg/eval",
+    "runlog": "src/rhg/runlog.py",
+    "seeds": "src/rhg/seeds.py",
+    "config": "src/rhg/config.py",
+    "plan": "src/rhg/plan.py",
+    "budget": "src/rhg/budget.py",
 }
+PLAN_RELPATH = "configs/plan.yaml"
 _SKIP_DIRS = {"__pycache__"}
 _SKIP_SUFFIXES = {".pyc", ".pyo"}
 
@@ -130,6 +146,8 @@ def compute_freeze(cfg_dir: Path | None = None, repo_root: Path | None = None) -
     if not prompts_path.is_file() and (cdir / "prompts.yaml").is_file():
         prompts_path = cdir / "prompts.yaml"
     prompts_sha = sha256_text_file(prompts_path) if prompts_path.is_file() else None
+    plan_path = cdir / "plan.yaml"
+    plan_sha = sha256_text_file(plan_path) if plan_path.is_file() else None
     hint_selection = None
     if prompts_path.is_file():
         prompts = yaml.safe_load(prompts_path.read_text(encoding="utf-8")) or {}
@@ -160,6 +178,7 @@ def compute_freeze(cfg_dir: Path | None = None, repo_root: Path | None = None) -
     return {
         "config_hashes": {arm: cfg.config_hash for arm, cfg in cfgs.items()},
         "prompts_sha256": prompts_sha,
+        "plan_sha256": plan_sha,
         "hint_selection": hint_selection,
         "hyperparameters": hyperparameters,
         "split_hash": read_split_hash(processed),
@@ -203,12 +222,13 @@ def flatten_freeze(freeze: dict[str, Any]) -> dict[str, str | None]:
     """Map a freeze (or recomputed) dict to ``{key: comparable value}``.
 
     Keys: ``config:<arm>``, ``prompts``, ``hint_selection``, ``hyperparameters``, ``split``,
-    ``dataset_revision``, ``requirements_gpu`` and the bare code-group names.
+    ``dataset_revision``, ``requirements_gpu``, ``plan_config`` and the bare code-group names.
     """
     flat: dict[str, str | None] = {}
     for arm, h in (freeze.get("config_hashes") or {}).items():
         flat[f"config:{arm}"] = h
     flat["prompts"] = freeze.get("prompts_sha256")
+    flat["plan_config"] = freeze.get("plan_sha256")
     for key, name in (("hint_selection", "hint_selection"), ("hyperparameters", "hyperparameters")):
         val = freeze.get(key)
         flat[name] = None if val is None else canonical_json_sha256(val)

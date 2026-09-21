@@ -33,6 +33,7 @@ from typing import Any
 from rhg.data import build
 from rhg.data.load import read_revision_line
 from rhg.data.prompts import load_prompts_cfg
+from rhg.env.sandbox import grading_environment
 from rhg.eval import pipeline as pl
 from rhg.eval.generate import GeneratorBackendError, SamplingParams, planted_pass_behavior
 
@@ -242,6 +243,9 @@ def run_stage(
 
     if graded is not None:
         rate_rows, stat_rows = aggregate(stage, groups, graded)
+        env = {**grading_environment(), "mock": bool(result["mock"])}
+        for r in stat_rows:
+            r["grader_env"] = env
         result["paths"] = write_outputs(stage, processed_dir, rate_rows, stat_rows)
         result["summary"] = summarize(stage, cfg, rate_rows, stat_rows)
         result["rates"] = rate_rows

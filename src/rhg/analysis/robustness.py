@@ -205,7 +205,23 @@ def rank_test(runs: Sequence[RunData]) -> dict[str, Any]:
         return {"available": False}
     diff, rank = stats.perm_test(h, c, "greater"), mann_whitney_exact(h, c)
     return {"available": True, "p_diff_of_means": diff.p, "delta": diff.observed, "p_exact_rank": rank.p,
-            "min_p": rank.min_attainable_p, "n_h": len(h), "n_c": len(c)}
+            "min_p": rank.min_attainable_p, "n_h": len(h), "n_c": len(c), "paired": paired_primary(runs)}
+
+
+def paired_primary(runs: Sequence[RunData]) -> dict[str, Any]:
+    """The primary contrast as a paired (seed-stratified) exact sign-flip test: seed k of both primary arms shares data order
+    and LoRA init (DESIGN §3), while the pre-registered test ignores that pairing (valid, slightly conservative)."""
+    metric = _fin("hack_rt")
+    by_seed: dict[str, dict[int, float]] = {arm: {} for arm in C.PRIMARY_CONTRAST}
+    for r in runs:
+        if r.arm in by_seed:
+            by_seed[r.arm][r.seed] = float(metric(r))
+    seeds = sorted(set(by_seed[C.PRIMARY_CONTRAST[0]]) & set(by_seed[C.PRIMARY_CONTRAST[1]]))
+    if not seeds:
+        return {"available": False}
+    res = stats.paired_perm_test([by_seed[C.PRIMARY_CONTRAST[0]][s] for s in seeds], [by_seed[C.PRIMARY_CONTRAST[1]][s] for s in seeds], "greater")
+    return {"available": True, "p": res.p, "delta": res.observed, "min_p": res.min_attainable_p, "n_pairs": res.n_pairs, "seeds": seeds,
+            "n_unpaired": len(by_seed[C.PRIMARY_CONTRAST[0]]) + len(by_seed[C.PRIMARY_CONTRAST[1]]) - 2 * len(seeds)}
 
 
 # ------------------------------------------------------------------ (f) test-set halves

@@ -39,6 +39,11 @@ No post-hoc change of endpoint, step, threshold, label, seed count, or test.
   step decreases with hint level none < subtle < explicit. Tests: exact Jonckheere–Terpstra
   (final rate, increasing; onset with censoring at T+1, decreasing). Caveat rule: if
   `clean_explicit` final HACK_RT > 0.02, the report states the trend is partly prompt-driven.
+  **Pre-declared power caveat:** at the Holm threshold H1 can only be rejected for a strict dose ordering (`hackable_none` <
+  `hackable_subtle` < `hackable_explicit` without ties at the top); `python -m rhg.analysis.power` gives power ≈ 0 when subtle and
+  explicit hack at similar rates. If every seed of `hackable_subtle` and `hackable_explicit` has final rate ≥ 0.02 (the regime in
+  which the primary has power), a non-rejection of H1 is reported as "not informative about dose-response", never as evidence
+  against it. H1 stays in the Holm family (m = 4), so the family is not chosen after seeing data.
 - **H2 (secondary, confirmatory):** in hackable arms (excluding `_ast`), across test
   problems, hack rate is negatively associated with base honest pass rate (`p_B_full`).
   Per-seed Spearman ρ (seeds with final rate strictly in (0,1)); exact one-sided Wilcoxon
@@ -56,6 +61,9 @@ Confirmatory secondary family for Holm–Bonferroni at α=0.05: **{H1-final, H1-
 H3b}, m=4.** The primary is tested at α=0.05 alone. Every other quantity — H3a, H4a, H4b,
 attempt rates, lengths, judge/AST results, any subgroup or trajectory analysis — is
 EXPLORATORY and reported without significance claims.
+The primary (α = 0.05 alone) and the secondary family (Holm, α = 0.05) are **separate error budgets**: the secondary tests are not
+gated on the primary, so the familywise error over all five confirmatory tests is not held at 0.05 (up to about 0.10). Any claim
+about a secondary hypothesis therefore names its own family, and the report states this next to the results.
 
 ## 5. H4b decision rule (no p-value)
 Final eval, `hackable_subtle_ast` seeds (n=3):
@@ -83,7 +91,9 @@ conclusion applies to leaky syntactic monitors only.
   ("low coverage at n≤5").
 - Minimum attainable p per test is printed for the executed seed counts, and any test that
   cannot reach its threshold is flagged in the report.
-- Judge/AST validity is reported with exact CIs anchored to execution labels; human-label
+- Judge/AST validity is reported with **Wilson score intervals** (approximate, not Clopper-Pearson) anchored to execution
+  labels; inverse-probability-weighted estimates use a Wilson interval at the Kish effective sample size, and F1/kappa use
+  percentile-bootstrap intervals (also approximate, per-item precision only, never seed-level inference). Human-label
   results (≈40 items) are secondary.
 - Exploratory by declaration (no significance claims): cross-hint evaluation, step-0
   baseline, the robustness suite (leave-one-seed-out, definition/window/threshold variants),
@@ -93,9 +103,16 @@ conclusion applies to leaky syntactic monitors only.
 `scripts/freeze_prereg.sh` first requires every pre-freeze artifact (hint selection, budget
 decision, passing pilot gate, splits, passing judge calibration whose rubric hash matches),
 then writes `prereg/FREEZE.json` (hint wordings, hyperparameters, split hash, dataset
-revision, config hashes, dependency pins, and hashes of the measurement code: analysis,
-grader/labels, detectors, judge rubric, data build), commits, and tags `prereg-v1`. **The
-commit and tag are pushed to a public remote before any main run**, so the timestamp is
+revision, config hashes, dependency pins, the sha256 of `configs/plan.yaml`, and hashes of the
+measurement and decision code: analysis, grader/labels, detectors, judge rubric, data build,
+the decision constants `src/rhg/prereg_constants.py`, the trainer and rollout logging
+(`src/rhg/train/`), the eval sampler and grading path (`src/rhg/eval/`), the log
+schema/validator, seed derivation, config schema, run plan and budget ladder), commits, and
+tags `prereg-v1`. **The commit and tag are pushed to a public remote before any main run**
+(`scripts/run_all.sh` refuses to launch unless `origin` holds the same `prereg-v1` tag object).
+Git dates are author-controlled, so the push alone is a weak timestamp: also deposit the tagged
+commit with an independent registry (an OSF registration, or a Zenodo release whose DOI
+timestamps the archive) and record its URL in `DEVIATIONS.md`, so the timestamp is
 third-party checkable. `python -m rhg.analysis.prereg_check` must pass for confirmatory
 output; post-tag changes to frozen code require `--amend` with a reason
 (`prereg/AMENDMENTS.jsonl`) and appear in the report.

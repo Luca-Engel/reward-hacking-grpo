@@ -15,6 +15,14 @@ CODE_FILE_FOR_GROUP = {
     "detect": "src/rhg/detect/ast_detector.py",
     "judge_rubric": "src/rhg/judge/rubric.py",
     "data_build": "src/rhg/data/build.py",
+    "constants": "src/rhg/prereg_constants.py",
+    "training": "src/rhg/train/rollout_io.py",
+    "eval": "src/rhg/eval/generate.py",
+    "runlog": "src/rhg/runlog.py",
+    "seeds": "src/rhg/seeds.py",
+    "config": "src/rhg/config.py",
+    "plan": "src/rhg/plan.py",
+    "budget": "src/rhg/budget.py",
 }
 
 
@@ -74,7 +82,10 @@ def test_compute_freeze_contents(fake_repo):
     assert f["split_hash"] == "splithash123"
     assert f["dataset_revision"] == "abc123rev"
     assert f["requirements_gpu_sha256"] == hashlib.sha256(b"torch==0.0.0\n").hexdigest()
-    assert set(f["code_groups"]) == set(CODE_GROUPS) == {"analysis", "env", "detect", "judge_rubric", "data_build"}
+    assert set(f["code_groups"]) == set(CODE_GROUPS) == set(CODE_FILE_FOR_GROUP)
+    assert set(CODE_GROUPS) == {"analysis", "env", "detect", "judge_rubric", "data_build", "constants", "training", "eval", "runlog",
+                                "seeds", "config", "plan", "budget"}
+    assert f["plan_sha256"] == hashlib.sha256((fake_repo / "configs/plan.yaml").read_bytes()).hexdigest()
     assert f["missing_code_groups"] == []
     hp = f["hyperparameters"]
     assert hp["T"] == 100 and hp["lr"] == 7.0e-5 and hp["max_completion_tokens"] == 1024
@@ -157,7 +168,7 @@ def test_tag_and_freeze_ok_passes(frozen_repo):
     assert {"tag_exists", "tag_is_ancestor", "freeze_exists", "freeze_matches_tag"} <= names
     assert {f"config:{a}" for a in ARMS} <= names
     assert {f"code:{g}" for g in CODE_GROUPS} <= names
-    assert {"prompts", "hint_selection", "hyperparameters", "split", "dataset_revision", "requirements_gpu"} <= names
+    assert {"prompts", "hint_selection", "hyperparameters", "split", "dataset_revision", "requirements_gpu", "plan_config"} <= names
     assert res.warnings == [] and res.amendments == []
     assert pc.confirmatory_ok(frozen_repo)
     assert pc.main(["--repo-root", str(frozen_repo)]) == 0
@@ -192,6 +203,18 @@ def test_code_group_drift_names_the_group(frozen_repo, group):
     assert res.failed_names == [f"code:{group}"]
     assert group in res.format()
     assert pc.main(["--repo-root", str(frozen_repo)]) == 3
+
+
+def test_decision_constants_are_frozen(frozen_repo):
+    """Editing alpha / Delta / thresholds after the tag must trip the check (they are not in the analysis directory)."""
+    _edit(frozen_repo, "src/rhg/prereg_constants.py", "ALPHA = 0.05", "ALPHA = 0.10")
+    assert pc.check(frozen_repo).failed_names == ["code:constants"]
+
+
+def test_plan_shuffle_is_frozen(frozen_repo):
+    """configs/plan.yaml holds the pre-declared shuffle that decides which primary pair the ladder drops first."""
+    _edit(frozen_repo, "configs/plan.yaml", "shuffle_seed: 20260920", "shuffle_seed: 1")
+    assert pc.check(frozen_repo).failed_names == ["plan_config"]
 
 
 def test_new_file_in_group_is_drift(frozen_repo):

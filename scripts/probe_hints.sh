@@ -3,7 +3,8 @@
 #   scripts/probe_hints.sh [--generate-only] [--dry-run] [-- extra rhg.eval.probe_hints args]
 # Writes results/probe/ and, on GO, prereg/hint_selection.json. It does not edit configs/prompts.yaml: set `subtle_selected` there
 # by hand and commit it before the freeze (freeze_prereg.sh checks that it matches the selection).
-# --generate-only: the box only generates; grade locally with `python -m rhg.eval.probe_hints --grade-only`.
+# --generate-only: the box only generates; grade on a Linux machine (WSL2 / container: the sandbox limits are enforced on POSIX only)
+# with `python -m rhg.eval.probe_hints --grade-only`.
 set -euo pipefail
 source "$(dirname "${BASH_SOURCE[0]}")/_common.sh"
 
@@ -31,7 +32,7 @@ RC=0
 run_py -m rhg.eval.probe_hints "${EXTRA[@]}" || RC=$?
 if [[ "$DRY_RUN" == 1 ]]; then exit 0; fi
 if [[ "$GENERATE_ONLY" == 1 && "$RC" == 0 ]]; then
-  log "completions written; grade locally: python -m rhg.eval.probe_hints --grade-only (copy results/probe/ first). Gate 1d is decided there."
+  log "completions written; grade on Linux (WSL2/container): python -m rhg.eval.probe_hints --grade-only (copy results/probe/ first). Gate 1d is decided there."
   exit 0
 fi
 if [[ "$RC" != 0 ]]; then

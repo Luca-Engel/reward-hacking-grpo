@@ -492,3 +492,21 @@ def test_reference_helpers_self_check():
     assert ref_jt_stat([[1, 2], [3, 4]]) == 4
     assert ref_wilcoxon([1, 2, 3, 4, 5], "greater")[1] == Fraction(1, 32)
     assert len(list(itertools.permutations(range(3)))) == 6
+
+
+# ------------------------------------------------------------------ paired sign-flip test (exploratory companion)
+def test_paired_perm_test_matches_hand_enumeration():
+    import itertools
+
+    a, b = [0.30, 0.10, 0.50, 0.05], [0.00, 0.02, 0.10, 0.05]
+    d = [x - y for x, y in zip(a, b)]
+    obs = sum(d) / 4
+    hits = sum(1 for s in itertools.product((1, -1), repeat=4) if sum(si * di for si, di in zip(s, d)) / 4 >= obs - 1e-12)
+    r = stats.paired_perm_test(a, b, "greater")
+    assert r.p == hits / 16 and r.n_pairs == 4 and r.n_relabelings == 16 and r.min_attainable_p == 1 / 16
+    assert stats.paired_perm_test(a, b, "less").p == sum(1 for s in itertools.product((1, -1), repeat=4)
+                                                         if sum(si * di for si, di in zip(s, d)) / 4 <= obs + 1e-12) / 16
+    assert stats.paired_perm_test([1, 1, 1], [0, 0, 0], "greater").p == 1 / 8  # all-positive differences: only the identity
+    assert stats.paired_perm_test([1.0], [1.0], "two-sided").p == 1.0
+    with pytest.raises(ValueError):
+        stats.paired_perm_test([1.0], [1.0, 2.0])

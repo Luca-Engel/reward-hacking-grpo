@@ -378,3 +378,33 @@ def test_vllm_backend_is_required_for_a_real_run(tmp_path, monkeypatch):
     d = tiny_dir(tmp_path)
     monkeypatch.setitem(__import__("sys").modules, "vllm", None)  # simulate a machine without vllm
     assert pr.main(["--stage", "A", "--processed-dir", str(d), "--n", "2", "--limit", "1"]) == 2
+
+
+# ------------------------------------------------------------------ grading environment (DESIGN §8 item 20)
+def test_real_completions_are_not_graded_where_limits_are_not_enforced(monkeypatch):
+    """Base-model pass rates must be graded under the same limits as the training/eval rewards."""
+    monkeypatch.setattr(pl, "limits_enforced", lambda: False)
+    monkeypatch.delenv("RHG_ALLOW_UNENFORCED_LIMITS", raising=False)
+    with pytest.raises(pl.PipelineError, match="refusing to grade real completions"):
+        pl.grade_completions({"generator": {"kind": "vllm"}}, [], [], cfg=CFG, prompts_cfg={})
+    # mock completions are exempt: the tests and the CPU pipeline grade fake data anywhere
+    with pytest.raises(Exception) as mock_err:
+        pl.grade_completions({"generator": {"kind": "mock"}}, [], [], cfg=CFG, prompts_cfg={})
+    assert "refusing" not in str(mock_err.value)
+    # the explicit exploration override lifts the refusal (Gate 1c then FAILs on the recorded environment)
+    monkeypatch.setenv("RHG_ALLOW_UNENFORCED_LIMITS", "1")
+    with pytest.raises(Exception) as override_err:
+        pl.grade_completions({"generator": {"kind": "vllm"}}, [], [], cfg=CFG, prompts_cfg={})
+    assert "refusing" not in str(override_err.value)
+    monkeypatch.delenv("RHG_ALLOW_UNENFORCED_LIMITS")
+    monkeypatch.setattr(pl, "limits_enforced", lambda: True)
+    with pytest.raises(Exception) as linux_err:  # a Linux box grades real completions without any override
+        pl.grade_completions({"generator": {"kind": "vllm"}}, [], [], cfg=CFG, prompts_cfg={})
+    assert "refusing" not in str(linux_err.value)
+
+
+def test_stage_stats_record_the_grading_environment(tmp_path):
+    out = run("A", tiny_dir(tmp_path), n=4, record_ledger=False)
+    rows = read(out["paths"]["stats"])
+    assert rows and all(r["grader_env"]["mock"] is True and isinstance(r["grader_env"]["limits_enforced"], bool)
+                        and r["grader_env"]["platform"] for r in rows)

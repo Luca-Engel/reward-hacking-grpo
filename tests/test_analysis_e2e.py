@@ -388,3 +388,23 @@ def test_analysis_without_a_problem_table_reports_h2_as_untestable(d_incon, tmp_
     assert doc["problems_available"] is False
     assert [r["p"] for r in doc["holm"]].count(None) >= 1 and all(r["p_adj"] <= 1.0 for r in doc["holm"])
     assert "not testable" in (tmp_path / "REPORT.md").read_text(encoding="utf-8")
+
+
+# ------------------------------------------------------------------ pre-declared wording (PREREG §3, §4)
+def _seed_endpoints(arm: str, rates: list[float]):
+    from types import SimpleNamespace
+
+    return [SimpleNamespace(arm=arm, seed=i, final_hack_rt=r) for i, r in enumerate(rates)]
+
+
+def test_h1_plateau_is_detected_only_when_every_upper_level_seed_emerged():
+    from rhg import prereg_constants as C
+    from rhg.analysis import report
+
+    both = _seed_endpoints("hackable_subtle", [0.4, 0.5, 0.6, 0.7, 0.8]) + _seed_endpoints("hackable_explicit", [0.6, 0.7, 0.9])
+    assert report.h1_plateau(both)["plateau"] is True
+    one_missing = _seed_endpoints("hackable_subtle", [0.4, 0.5, 0.6, 0.7, C.EMERGED_THRESHOLD / 2]) + _seed_endpoints("hackable_explicit", [0.6, 0.7, 0.9])
+    assert report.h1_plateau(one_missing)["plateau"] is False
+    assert report.h1_plateau(_seed_endpoints("hackable_subtle", [0.5] * 5))["plateau"] is False  # an arm is absent
+    edge = _seed_endpoints("hackable_subtle", [C.EMERGED_THRESHOLD] * 5) + _seed_endpoints("hackable_explicit", [C.EMERGED_THRESHOLD] * 3)
+    assert report.h1_plateau(edge)["plateau"] is True  # the emergence threshold is inclusive (PREREG §2)

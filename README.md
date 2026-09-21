@@ -22,7 +22,7 @@ monitor. Details: [`DESIGN.md`](DESIGN.md) §3, [`PREREG.md`](PREREG.md) §1.
 | # | arm id | reward | hint | monitor | seeds | isolates / rules out |
 |---|---|---|---|---|---|---|
 | 1 | `clean_none` | clean | none | – | 2 | baseline honest learning curve |
-| 2 | `clean_subtle` | clean | subtle | – | 5 | **primary control**: the wording alone does not make the model hack |
+| 2 | `clean_subtle` | clean | subtle | – | 5 | **primary control**: tests whether the wording alone makes the model hack |
 | 3 | `clean_explicit` | clean | explicit | – | 2 | prompt-permission effect at the explicit level |
 | 4 | `hackable_none` | hackable | none | – | 2 | discoverability floor (expected ≈ 0) |
 | 5 | `hackable_subtle` | hackable | subtle | – | 5 | **primary treatment** |
@@ -108,8 +108,11 @@ training works on a laptop with `uv sync`.
 
 - `scripts/freeze_prereg.sh` (Gate 1f) refuses unless every pre-freeze artifact exists (hint selection, budget decision, passing pilot
   gate, splits, a passing judge calibration whose rubric hash matches), then writes `prereg/FREEZE.json` (hint wordings, hyperparameters,
-  split hash, dataset revision, config hashes, dependency pins and hashes of the measurement code: analysis, grader/labels, detectors,
-  the judge rubric, data build), commits it and tags `prereg-v1`. The commit and tag are pushed to a public remote before any main run.
+  split hash, dataset revision, config hashes, the run plan, dependency pins and hashes of the measurement and decision code: analysis,
+  grader/labels, detectors, the judge rubric, data build, the decision constants, the trainer and rollout logging, the eval sampler,
+  the log schema, seeds, config schema, plan and budget ladder), commits it and tags `prereg-v1`. The commit and tag are pushed to a
+  public remote before any main run (`scripts/run_all.sh` verifies that `origin` holds the same tag) and, because git dates are
+  author-controlled, the tagged commit should also be deposited with an independent registry (OSF registration or a Zenodo DOI).
 - `--confirmatory` (trainer, judge, analysis) refuses to start unless the tree is clean, `prereg-v1` is an ancestor of `HEAD` and the
   frozen hashes match (`python -m rhg.analysis.prereg_check`). Without it every output is stamped EXPLORATORY.
 - Post-tag changes to frozen code need `python -m rhg.analysis.prereg_check --amend --reason "..."` (logged in

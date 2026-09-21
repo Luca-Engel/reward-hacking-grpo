@@ -53,3 +53,10 @@ def sim22(tmp_path_factory: pytest.TempPathFactory):
     doc = json.loads((out / "tests.json").read_text(encoding="utf-8"))
     return SimpleNamespace(root=root, sim=sim, runs=sim.runs, problems=sim.problems, truth=sim.truth, repo=repo, analysis=out, doc=doc,
                            tests={t["id"]: t for t in doc["tests"]})
+
+
+@pytest.fixture(autouse=True)
+def _allow_unenforced_limits_for_fake_data(monkeypatch):
+    """Tests grade fake data with fake or mock generators on any OS. The production refusal to grade REAL completions where the
+    sandbox limits are not enforced (rhg.eval.pipeline.grade_completions) is tested explicitly and clears this override."""
+    monkeypatch.setenv("RHG_ALLOW_UNENFORCED_LIMITS", "1")

@@ -99,6 +99,15 @@ prereg_tag_ancestor() {
     && git merge-base --is-ancestor "refs/tags/prereg-v1^{commit}" HEAD >/dev/null 2>&1
 }
 
+# git: is the SAME prereg-v1 tag object on the `origin` remote? The public push is what makes the freeze timestamp checkable by
+# a third party (local tag/commit dates are author-controlled), so every confirmatory launch requires it.
+prereg_tag_pushed() {
+  local local_obj remote_obj
+  local_obj="$(git rev-parse -q --verify "refs/tags/prereg-v1" 2>/dev/null)" || return 1
+  remote_obj="$(git ls-remote --tags origin "refs/tags/prereg-v1" 2>/dev/null | grep -v '\^{}' | awk '{print $1}' | head -n1)" || return 1
+  [[ -n "$remote_obj" && "$remote_obj" == "$local_obj" ]]
+}
+
 # python -m rhg.analysis.prereg_check passes?
 prereg_check_ok() {
   py -m rhg.analysis.prereg_check >/dev/null 2>&1

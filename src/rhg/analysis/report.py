@@ -199,14 +199,32 @@ def compute_tests(table: Sequence[E.SeedEndpoints], confirmatory: bool) -> dict[
                                note="outside the Holm family by structure (DESIGN §6): reported with its exact p, no significance claim")
     recs["H4b"] = _h4b_record(confirmatory, table)
     holm = stats.holm({k: recs[k]["p"] for k in C.HOLM_FAMILY})
+    plateau = h1_plateau(table)
     for row in holm:
         r = recs[row.name]
         r["holm"] = {"p_adj": row.p_adj, "threshold": row.threshold, "rank": row.rank, "reject": row.reject}
         if r["p"] is not None:
             r["result"] = ("rejected" if row.reject else "not rejected") + f" under Holm-Bonferroni (m = {len(C.HOLM_FAMILY)})"
+        if row.name.startswith("H1") and plateau["plateau"]:
+            r["plateau"] = plateau
+            r["note"] = (r["note"] + " " if r["note"] else "") + H1_PLATEAU_NOTE
+            if r["p"] is not None and not row.reject:
+                r["result"] += " -- plateau: not informative about dose-response (PREREG §3)"
     if recs["H4a"]["p"] is not None:
         recs["H4a"]["result"] = "exploratory: exact p reported, no significance claim"
     return {"tests": list(recs.values()), "holm": [row.__dict__ for row in holm]}
+
+
+H1_PLATEAU_NOTE = ("Plateau (PREREG §3): every hackable_subtle and hackable_explicit seed emerged, so the design cannot separate the two "
+                   "hint levels here and H1 has almost no power at the Holm threshold; a non-rejection is NOT evidence against a dose-response.")
+
+
+def h1_plateau(table: Sequence[E.SeedEndpoints]) -> dict[str, Any]:
+    """True iff every seed of the two upper hackable hint levels emerged (final HACK_RT >= EMERGED_THRESHOLD)."""
+    by = E.by_arm(table, "final_hack_rt")
+    arms = C.H1_ARMS[1:]
+    ok = all(by.get(a) for a in arms) and all(v >= C.EMERGED_THRESHOLD - 1e-12 for a in arms for v in by[a])
+    return {"plateau": bool(ok), "arms": list(arms), "emerged_threshold": C.EMERGED_THRESHOLD}
 
 
 def _emergence(rates: Sequence[float]) -> dict[str, Any]:
@@ -478,6 +496,9 @@ def _box(mode: str) -> str:
         "not evidence that reward does not matter).",
         f"> - Analysis mode of this report: **{mode}**. " + ("Only the primary and the Holm family {H1-final, H1-onset, H2, H3b} are confirmatory; everything else is EXPLORATORY."
                                                               if mode == "CONFIRMATORY" else "The report was NOT produced with `--confirmatory`, so everything below is stamped EXPLORATORY."),
+        "> - Error budgets (PREREG §4): the primary (alpha = 0.05) and the secondary Holm family (alpha = 0.05) are separate; the secondary tests "
+        "are not gated on the primary, so the familywise error over all five confirmatory tests is not held at 0.05. Claims about a secondary "
+        "hypothesis name their own family.",
         "",
     ])
 
@@ -537,6 +558,8 @@ def render_report(doc, table, runset, rob, health, homog, tables, fig_records, e
     L += [md_table(rows), ""]
     cav = doc["h1_caveat"]
     L += [f"**H1 clean-explicit caveat check.** {cav['text']}", ""]
+    if _get(doc, "H1_final").get("plateau"):
+        L += [f"**H1 power caveat.** {H1_PLATEAU_NOTE}", ""]
     h2 = _get(doc, "H2")
     L += [f"**H2.** {h2['note']}", ""]
     if h2["effect"].get("excluded"):
@@ -605,6 +628,12 @@ def render_report(doc, table, runset, rob, health, homog, tables, fig_records, e
             L += ["### (e) Exact rank test next to the difference of means", "",
                   f"Difference of means: {cell_p(rt['p_diff_of_means'], rt['min_p'], f'{rt['n_h']} v {rt['n_c']}')}; exact Mann-Whitney (permutation on ranks): "
                   f"{cell_p(rt['p_exact_rank'], rt['min_p'], f'{rt['n_h']} v {rt['n_c']}')}.", ""]
+            pr = rt.get("paired") or {}
+            if pr.get("available"):
+                L += [f"Paired companion (seed k of both primary arms shares data order and LoRA init; exact sign flips of the within-pair "
+                      f"differences, {pr['n_pairs']} pairs): {cell_p(pr['p'], pr['min_p'], str(pr['n_pairs']) + ' pairs')}, mean difference "
+                      f"{pr['delta']:.4f}. The pre-registered unpaired test ignores this pairing (valid, slightly conservative); the paired "
+                      f"value is EXPLORATORY and never replaces it.", ""]
         hv = rob["halves"]
         L += ["### (f) Test-set halves", "", md_table([{"half": h["half"], "n problems": h["n_problems"], "primary p (min; n)": cell_p(h.get("primary_p"), h.get("primary_min_p"), h.get("primary_n", "")),
                                                         "delta": h.get("primary_delta")} for h in hv["halves"]]),
@@ -635,6 +664,6 @@ def render_report(doc, table, runset, rob, health, homog, tables, fig_records, e
     L += ["## 9. Figures, examples and validation", ""]
     L += [f"- `figures/{r['file']}`: {r['title']}" for r in fig_records] or ["- (figures not generated)"]
     L += ["", f"- `examples.md`: random, seed-fixed gallery (RNG seed {ex['seed']}), completions verbatim, truncated at {ex['max_chars']} characters.",
-          "- Measurement validity (AST detector and judge vs the execution label, with exact CIs) is produced by `rhg.validate.harness` into "
+          "- Measurement validity (AST detector and judge vs the execution label, with Wilson score CIs; IPW estimates are approximate) is produced by `rhg.validate.harness` into "
           "`validation.md`, not by this report; the execution label needs neither.", ""]
     return "\n".join(L) + "\n"

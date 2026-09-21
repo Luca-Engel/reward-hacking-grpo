@@ -455,8 +455,22 @@ def balance_report(problems: Sequence[Mapping], strat: Mapping[str, int]) -> dic
     return out
 
 
+def grading_envs(processed_dir: Path) -> dict[str, list[dict] | None]:
+    """Distinct ``grader_env`` records of ``passrate_{A,B}_stats.jsonl`` (``None`` = no stats file / nothing recorded)."""
+    out: dict[str, list[dict] | None] = {}
+    for stage in ("A", "B"):
+        path = processed_dir / f"passrate_{stage}_stats.jsonl"
+        seen: dict[str, dict] = {}
+        if path.is_file():
+            for r in read_jsonl(path):
+                if isinstance(r.get("grader_env"), dict):
+                    seen[json.dumps(r["grader_env"], sort_keys=True)] = r["grader_env"]
+        out[stage] = list(seen.values()) or None
+    return out
+
+
 def gate1c(counts: Mapping[str, int], ref_validity: float | None, balance: Mapping, clusters_intact: bool,
-           band: Mapping) -> dict:
+           band: Mapping, grading: Mapping[str, list[dict] | None] | None = None) -> dict:
     items = []
 
     def add(name: str, status: str, value: Any, note: str = "") -> None:
@@ -479,6 +493,19 @@ def gate1c(counts: Mapping[str, int], ref_validity: float | None, balance: Mappi
         "PASS" if d is None or d >= 0.05 else "WARN", None if d is None else round(d, 4))
     add("no near-duplicate cluster spans splits", "PASS" if clusters_intact else "FAIL", clusters_intact)
     add("band", "INFO", f"[{band['low']}, {band['high']}]" + (" (widened fallback)" if band["widened"] else ""))
+    if grading is not None:
+        name = "pass rates graded with enforced sandbox limits (same as training/eval)"
+        unenforced = sorted(s for s, envs in grading.items()
+                            if envs and any(not e.get("limits_enforced") and not e.get("mock") for e in envs))
+        missing = sorted(s for s, envs in grading.items() if not envs)
+        if unenforced:
+            add(name, "FAIL", "stage " + "+".join(unenforced),
+                "graded on a platform that does not enforce the memory/CPU limits (Windows): re-grade on Linux (box, WSL2 or container)")
+        elif missing:
+            add(name, "WARN", "stage " + "+".join(missing), "no grader_env recorded (stats file missing or from an older version)")
+        else:
+            add(name, "PASS", "; ".join(sorted({f"{e.get('platform')} py{e.get('python')}{' (mock)' if e.get('mock') else ''}"
+                                                for envs in grading.values() for e in envs or []})))
     passed = all(i["status"] in ("PASS", "INFO", "WARN") for i in items)
     return {"pass": passed, "items": items}
 
@@ -538,7 +565,7 @@ def stage_split(processed_dir: Path, cfg, widen: bool = False, fixture: bool = F
         ref_validity = json.loads((processed_dir / "validation_report.json").read_text(encoding="utf-8"))["reference_validity"]
     except (OSError, ValueError, KeyError):
         pass
-    gate = gate1c(counts, ref_validity, balance, intact, band)
+    gate = gate1c(counts, ref_validity, balance, intact, band, None if fixture else grading_envs(processed_dir))
     sel_clusters = {p["problem_id"]: p["cluster_id"] for p in selected}
     splits = {
         "split_hash": split_hash(assignment),

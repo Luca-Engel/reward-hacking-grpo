@@ -858,3 +858,25 @@ def test_manifest_readers_accept_the_files_we_write(built):
     build.main(["--stage", "split", *common])
     assert read_split_hash(proc) == json.loads((proc / "splits.json").read_text(encoding="utf-8"))["split_hash"]
     assert read_dataset_revision(proc).startswith("rhg-fixture@")
+
+
+# ------------------------------------------------------------------ Gate 1c: grading environment of the pass-rate files
+def _gate_items(grading):
+    band = {"low": 0.1, "high": 0.4, "widened": False}
+    g = build.gate1c({"train": 200, "val": 40, "test": 60}, 0.99, {"p_A_kruskal_p": 0.5, "difficulty_chi2_p": 0.5}, True, band, grading)
+    return g, {i["item"]: i for i in g["items"]}["pass rates graded with enforced sandbox limits (same as training/eval)"]
+
+
+def test_gate1c_fails_on_pass_rates_graded_without_enforced_limits():
+    linux = {"platform": "linux", "python": "3.12.3", "limits_enforced": True, "mock": False}
+    windows = {"platform": "win32", "python": "3.12.3", "limits_enforced": False, "mock": False}
+    g, item = _gate_items({"A": [linux], "B": [linux]})
+    assert item["status"] == "PASS" and g["pass"] is True
+    g, item = _gate_items({"A": [linux], "B": [windows]})
+    assert item["status"] == "FAIL" and item["value"] == "stage B" and g["pass"] is False and "WSL2" in item["note"]
+    g, item = _gate_items({"A": [{**windows, "mock": True}], "B": [{**windows, "mock": True}]})
+    assert item["status"] == "PASS"  # mock data is exempt
+    g, item = _gate_items({"A": None, "B": [linux]})
+    assert item["status"] == "WARN" and g["pass"] is True  # legacy file without a recorded environment: flagged, not blocking
+    assert "graded with enforced" not in " ".join(i["item"] for i in _gate_items.__globals__["build"].gate1c(
+        {"train": 200, "val": 40, "test": 60}, 0.99, {}, True, {"low": 0.1, "high": 0.4, "widened": False})["items"])

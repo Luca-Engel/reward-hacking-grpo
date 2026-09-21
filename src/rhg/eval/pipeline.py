@@ -34,6 +34,7 @@ from typing import Any
 
 from rhg.data.prompts import build_prompt, prompts_hash, render_chat
 from rhg.env.grader import GradeItem, grade_batch
+from rhg.env.sandbox import limits_enforced
 from rhg.eval.generate import Completion, Generator, SamplingParams, generate_for, prompt_sha
 
 COMPLETIONS_VERSION = 1
@@ -247,7 +248,19 @@ def grade_completions(
     workers: int | None = None,
     chunk_prompts: int = DEFAULT_CHUNK_PROMPTS,
 ) -> list[dict[str, Any]]:
-    """CPU-only grading of a completions file's rows (``--grade-only``); validates them against ``groups``."""
+    """CPU-only grading of a completions file's rows (``--grade-only``); validates them against ``groups``.
+
+    Real (non-mock) completions are refused where the sandbox cannot enforce its memory/CPU limits (Windows): the base-model
+    pass rates select the problems and are the H2 covariate, so they must be graded under the same limits as the training and
+    eval rewards. Grade on Linux (the box, WSL2 or a container). ``RHG_ALLOW_UNENFORCED_LIMITS=1`` lifts the refusal for
+    exploration only; the outputs then record ``limits_enforced: false`` and Gate 1c FAILs on them.
+    """
+    if header.get("generator", {}).get("kind") != "mock" and not limits_enforced() and os.environ.get("RHG_ALLOW_UNENFORCED_LIMITS") != "1":
+        raise PipelineError(
+            "refusing to grade real completions here: this platform does not enforce the sandbox memory/CPU limits, so the "
+            "labels could differ from the ones the trainer sees (DESIGN §8 item 20). Grade on Linux (the GPU box, WSL2 or a "
+            "container); set RHG_ALLOW_UNENFORCED_LIMITS=1 only for exploration (Gate 1c will FAIL on such files)."
+        )
     enable_thinking = bool(header.get("enable_thinking", cfg.model.enable_thinking))
     by_id = {p["problem_id"]: p for g in groups for p in g.problems}
     expected: dict[tuple[str, str], str] = {}

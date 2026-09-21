@@ -5,6 +5,7 @@ labelled: a Monte-Carlo fallback for very large enumerations sets ``exact=False`
 descriptive and carry a low-coverage flag at n <= 5 seeds.
 
 * ``perm_test``           two-sample permutation test on the difference of means (unit = seed);
+* ``paired_perm_test``    exact sign-flip test for paired units (exploratory companion of ``perm_test``);
 * ``jonckheere_terpstra`` ordered-alternatives trend test (unequal group sizes, ties, censored values);
 * ``wilcoxon_signed_rank`` exact signed-rank test with tie-aware (mid-rank) statistic;
 * ``spearman``            rank correlation with mid-ranks;
@@ -183,6 +184,37 @@ def perm_test(
         hits += _tail_count(diffs, obs, alternative, tol)
         done += cur
     return PermResult((1 + hits) / (1 + n_draws), obs, False, n_draws, alternative, k, m, 1 / (1 + n_draws))
+
+
+# ------------------------------------------------------------------ paired (seed-stratified) sign-flip test
+@dataclass(frozen=True)
+class PairedResult:
+    p: float
+    observed: float  # mean of the within-pair differences a_i - b_i
+    n_pairs: int
+    n_relabelings: int  # 2 ** n_pairs
+    alternative: str
+    min_attainable_p: float
+
+
+def paired_perm_test(a: Sequence[float], b: Sequence[float], alternative: str = "greater") -> PairedResult:
+    """Exact randomisation test that respects a pairing of the units (here: the same seed value in two arms shares data order
+    and LoRA init). Under the null the two arm labels are exchangeable *within* each pair, so the null distribution of the mean
+    within-pair difference is the 2**n sign flips of ``d_i = a_i - b_i``. Valid whether or not the pairing carries information;
+    it removes the (small) conservatism of the unpaired test but can only reach ``2**-n``, so it is an exploratory companion
+    of the pre-registered unpaired test, never a replacement."""
+    _check_alt(alternative, ("greater", "less", "two-sided"))
+    xa, xb = _as_float_array(a, "a"), _as_float_array(b, "b")
+    if xa.size != xb.size or xa.size == 0:
+        raise ValueError("paired_perm_test needs two non-empty arrays of equal length")
+    d = xa - xb
+    n = int(d.size)
+    obs = float(d.mean())
+    tol = _REL_TOL * (float(np.abs(d).max()) or 1.0)
+    signs = np.array(list(itertools.product((1.0, -1.0), repeat=n)))
+    means = (signs * d).mean(axis=1)
+    hits = _tail_count(means, obs, alternative, tol)
+    return PairedResult(hits / 2**n, obs, n, 2**n, alternative, min(1.0, 2.0**-n * (2 if alternative == "two-sided" else 1)))
 
 
 # ------------------------------------------------------------------ Jonckheere-Terpstra

@@ -4,8 +4,11 @@
 # Default (all on the box): A -> `split --select-only` -> B -> `split --strict` (prints the Gate 1c checklist), then checks that
 # the labeler agrees with the hand-built synthetic controls.
 # --generate-only: the box only generates (no grading CPU work). Stage B needs the band selection made from graded stage A, so
-# it takes two rounds: (1) box: this script generates A, you grade A locally, select, copy data/processed back; (2) box: this
-# script generates B (it detects selected_A.json), you grade B and split locally. The exact commands are printed each time.
+# it takes two rounds: (1) box: this script generates A, you grade A on a LINUX machine, select, copy data/processed back; (2) box:
+# this script generates B (it detects selected_A.json), you grade B and split there. The exact commands are printed each time.
+# Grade on Linux (WSL2, a container or any Linux host), NOT natively on Windows: the sandbox enforces its memory/CPU limits only on
+# POSIX, and the pass rates must be graded under the same limits as the training/eval rewards. rhg.eval.pass_rate refuses real
+# completions elsewhere, records the grading environment, and Gate 1c FAILs on files graded without enforced limits.
 # --widen applies the single pre-declared band widening [0.05, 0.50] (SCHEDULE Gate 1c).
 set -euo pipefail
 source "$(dirname "${BASH_SOURCE[0]}")/_common.sh"
@@ -37,7 +40,7 @@ if [[ "$GENERATE_ONLY" == 1 ]]; then
     run_py -m rhg.eval.pass_rate --stage A --generate-only
     cat <<EOT
 
-Stage A completions written. Grade and select LOCALLY (data/processed must be the one built on the box: copy it):
+Stage A completions written. Grade and select on a LINUX machine (WSL2 / container; data/processed must be the one built on the box: copy it):
   rsync -av USER@BOX:$REPO_ROOT/data/processed/ data/processed/
   python -m rhg.eval.pass_rate --stage A --grade-only
   python -m rhg.data.build --stage split --select-only ${WIDEN[*]:-}
@@ -48,7 +51,7 @@ EOT
     run_py -m rhg.eval.pass_rate --stage B --generate-only
     cat <<EOT
 
-Stage B completions written. Grade and split LOCALLY:
+Stage B completions written. Grade and split on the same Linux machine:
   rsync -av USER@BOX:$REPO_ROOT/data/processed/completions_B.jsonl.gz data/processed/
   python -m rhg.eval.pass_rate --stage B --grade-only
   python -m rhg.data.build --stage split --strict ${WIDEN[*]:-}     # prints the Gate 1c checklist, exit 1 = NO-GO
