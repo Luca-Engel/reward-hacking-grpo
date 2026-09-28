@@ -17,9 +17,9 @@ from rhg import plan as P
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 SCRIPTS = REPO_ROOT / "scripts"
-EXPECTED = ["_common", "analyze", "bench_throughput", "calibrate_judge", "freeze_prereg", "judge_all", "measure_pass_rate",
+EXPECTED = ["_common", "analyze", "bench_throughput", "calibrate_judge", "prefreeze_gates", "freeze_prereg", "judge_all", "measure_pass_rate",
             "package_results", "pilot", "probe_hints", "run_all", "run_arm", "setup_box", "smoke"]
-GPU_SCRIPTS = ["setup_box", "smoke", "bench_throughput", "measure_pass_rate", "probe_hints", "pilot", "run_arm", "run_all"]
+GPU_SCRIPTS = ["prefreeze_gates", "setup_box", "smoke", "bench_throughput", "measure_pass_rate", "probe_hints", "pilot", "run_arm", "run_all"]
 FAKE_KEY = "sk-ant-FAKE-KEY-FOR-TESTS"
 
 
@@ -105,7 +105,7 @@ def test_bash_syntax(name):
 
 
 DRY_ARGS = {
-    "setup_box": [], "smoke": [], "bench_throughput": [], "measure_pass_rate": [], "probe_hints": [], "pilot": [],
+    "prefreeze_gates": [], "setup_box": [], "smoke": [], "bench_throughput": [], "measure_pass_rate": [], "probe_hints": [], "pilot": [],
     "run_arm": ["hackable_subtle", "0"], "run_all": [], "package_results": [],
 }
 

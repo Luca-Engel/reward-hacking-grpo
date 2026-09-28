@@ -54,7 +54,7 @@ Order, gates and go/no-go rules are in [`SCHEDULE.md`](SCHEDULE.md); the morning
 [`docs/MORNING_CHECKLIST.md`](docs/MORNING_CHECKLIST.md). GPU-box commands run on a rented, disposable box that never holds the API key.
 
 ```bash
-# Day 1, GPU box
+# Day 1, GPU box (or all six steps plus the packaging in one go: scripts/prefreeze_gates.sh --usd-per-hour 0.45)
 scripts/setup_box.sh
 scripts/smoke.sh                                   # Gate 1a
 scripts/bench_throughput.sh --usd-per-hour 0.45    # Gate 1b (use your real rate)

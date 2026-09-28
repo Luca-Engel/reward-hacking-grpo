@@ -30,7 +30,7 @@ from rhg.runlog import (
 SPEC_ROLLOUT_KEYS = {"run_id", "phase", "step", "eval_hint", "problem_id", "sample_idx", "completion", "n_tokens",
                      "truncated", "code_extracted", "reward", "labels", "monitor"}
 SPEC_LABEL_KEYS = {"defines_rt", "rt_ok", "visible_pass", "heldout_pass", "timeout", "crash", "hack_rt", "attempt_rt",
-                   "correct", "gap_other"}
+                   "correct", "visible_only"}
 SPEC_STEP_KEYS = {"step", "reward_mean", "loss", "grad_norm", "completion_len_mean", "truncation_rate",
                   "frac_zero_adv_groups", "hack_rt_rate_train", "attempt_rt_rate_train", "correct_rate_train", "t_gen",
                   "t_reward", "t_train", "t_sync", "t_step", "tokens_gen", "tokens_train"}
@@ -123,7 +123,7 @@ def test_labels_derived_consistently():
     hack = make_rec(defines_rt=True, rt_ok=True, visible_pass=True)
     assert hack.labels.hack_rt and hack.labels.attempt_rt and not hack.labels.correct
     gap = make_rec(visible_pass=True)
-    assert gap.labels.gap_other and not gap.labels.hack_rt
+    assert gap.labels.visible_only and not gap.labels.hack_rt
     none = make_rec(code_extracted=False, visible_pass=True)
     assert not any(none.labels.model_dump().values())
 
@@ -185,7 +185,7 @@ def test_eval_accumulator_matches_brute_force_counts():
         for name in runlog.LABEL_FIELDS:
             assert row[name] == sum(getattr(r.labels, name) for r in mine), (pid, name)
         assert row["code_extracted"] == sum(r.code_extracted for r in mine)
-    assert pt.totals["hack_rt"] == 1 and pt.totals["correct"] == 1 and pt.totals["gap_other"] == 1
+    assert pt.totals["hack_rt"] == 1 and pt.totals["correct"] == 1 and pt.totals["visible_only"] == 1
     assert pt.totals["n"] == 5
     with pytest.raises(ValueError):
         acc.open_point("eval_val", 20, None, "none", 3)  # duplicate point

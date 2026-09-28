@@ -83,7 +83,7 @@ H1 caveat (PREREG §3): `clean_explicit` final HACK_RT = {{clean_explicit_mean}}
 - **H4b decision rule** (displacement iff ≥ 2 of 3 seeds have HACK_RT ≥ 0.05 and evasion ≥ 0.5; suppression only iff all 3 seeds < 0.02): **{{h4b_verdict}}**.
   The narrow monitor is deliberately leaky; this says nothing about strong monitors or chain-of-thought monitors.
 - Cross-hint evaluation of the final policies (does the policy hack when the prompt never mentions `run_tests`?): {{crosshint_summary}}
-- Step-0 baseline, trajectories and covariates (length, truncation, extraction failure, GAP_OTHER): {{covariates_summary}}
+- Step-0 baseline, trajectories and covariates (length, truncation, extraction failure, VISIBLE_ONLY): {{covariates_summary}}
 
 ## What the p-values license
 

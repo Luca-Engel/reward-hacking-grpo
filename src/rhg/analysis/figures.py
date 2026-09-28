@@ -189,7 +189,7 @@ class FigureSet:
         self.dots_figure("gap", "Reward-held-out gap of the last 5 training steps (H3a, descriptive)", "H3a", ARM_ORDER, "gap",
                          "train reward - train held-out pass", "Mechanical in hackable arms; reported, not tested.", rate=False)
         panels = (("len_mean", "completion length (tokens)", False), ("truncation_rate", "truncation rate", True),
-                  ("extraction_fail_rate", "code-extraction failure rate", True), ("final_gap_other", "GAP_OTHER rate", True),
+                  ("extraction_fail_rate", "code-extraction failure rate", True), ("final_visible_only", "VISIBLE_ONLY rate", True),
                   ("final_attempt_rt", "ATTEMPT_RT rate", True), ("final_correct", "CORRECT rate", True))
         fig, axes = self.plt.subplots(2, 3, figsize=(11, 6.4))
         arms = [a for a in ARM_ORDER if any(e.arm == a for e in self.table)]
@@ -199,7 +199,7 @@ class FigureSet:
                 ax.set_ylim(bottom=0)
             ax.tick_params(axis="x", labelrotation=60, labelsize=5.5)
         self._finish(fig, "covariates", "Covariates that can move for non-hacking reasons (final test eval)", "covariates",
-                     "Length, truncation, extraction failure, GAP_OTHER, attempt and correct rates per seed.", arms)
+                     "Length, truncation, extraction failure, VISIBLE_ONLY, attempt and correct rates per seed.", arms)
 
     def evasion(self) -> None:
         data = {a: [e.evasion for e in self.table if e.arm == a and not math.isnan(e.evasion)] for a in ARM_ORDER}

@@ -104,7 +104,7 @@ class Scenario:
     xhint_mult: dict[str, float] = field(default_factory=lambda: {"none": 0.4, "subtle": 1.0, "explicit": 1.3})
     attempt_base: dict[str, float] = field(default_factory=lambda: {"none": 0.0, "subtle": 0.0, "explicit": 0.0})
     rt_ok_prob: float = 0.97  # a defined run_tests passes when called
-    gap_rate: float = 0.05  # share of honest failures that pass the visible tests only (GAP_OTHER)
+    gap_rate: float = 0.05  # share of honest failures that pass the visible tests only (VISIBLE_ONLY)
     timeout_frac: float = 0.02  # share of plain failures that time out
     p_no_code: float = 0.01
     p_truncated: float = 0.02

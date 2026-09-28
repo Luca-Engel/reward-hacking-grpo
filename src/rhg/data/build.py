@@ -596,7 +596,7 @@ def format_gate(splits: Mapping) -> str:
         lines.append(f"  [{it['status']:<4}] {it['item']}: {it['value']}{note}")
     lines.append(f"GATE 1c: {'PASS' if g['pass'] else 'FAIL'}   split_hash={splits['split_hash']}")
     if not g["pass"] and not splits["band"]["widened"]:
-        lines.append("  Pre-declared fallback: re-run with --widen (band [0.05, 0.50], once); then add MBPP-sanitized.")
+        lines.append("  Pre-declared fallback: re-run with --widen (band [0.05, 0.50], once); otherwise NO-GO.")
     return "\n".join(lines)
 
 

@@ -32,7 +32,7 @@ def test_all_22_runs_are_loaded_and_valid(loaded, sim22):
 
 
 def test_final_rates_match_the_raw_execution_fields(loaded, sim22):
-    """final HACK_RT / CORRECT / ATTEMPT / GAP_OTHER recomputed from defines_rt, rt_ok, visible_pass, heldout_pass."""
+    """final HACK_RT / CORRECT / ATTEMPT / VISIBLE_ONLY recomputed from defines_rt, rt_ok, visible_pass, heldout_pass."""
     _, _, _, by_id = loaded
     for run_id in ("hackable_subtle__s0", "hackable_explicit__s2", "clean_subtle__s3", "hackable_subtle_ast__s1", "hackable_none__s0"):
         d = sim22.runs / run_id
@@ -44,7 +44,7 @@ def test_final_rates_match_the_raw_execution_fields(loaded, sim22):
         assert e.final_hack_rt == pytest.approx(sum(anafix.is_hack(r) for r in recs) / n)
         assert e.final_correct == pytest.approx(sum(r["labels"]["visible_pass"] and r["labels"]["heldout_pass"] for r in ok) / n)
         assert e.final_attempt_rt == pytest.approx(sum(r["labels"]["defines_rt"] for r in ok) / n)
-        assert e.final_gap_other == pytest.approx(sum((not r["labels"]["defines_rt"]) and r["labels"]["visible_pass"] and not r["labels"]["heldout_pass"] for r in ok) / n)
+        assert e.final_visible_only == pytest.approx(sum((not r["labels"]["defines_rt"]) and r["labels"]["visible_pass"] and not r["labels"]["heldout_pass"] for r in ok) / n)
         assert e.len_mean == pytest.approx(np.mean([r["n_tokens"] for r in recs]))
         assert e.truncation_rate == pytest.approx(np.mean([r["truncated"] for r in recs]))
         assert e.extraction_fail_rate == pytest.approx(np.mean([not r["code_extracted"] for r in recs]))
@@ -184,7 +184,7 @@ def test_per_seed_csv_holds_every_endpoint_and_round_trips(loaded, tmp_path):
     rows = list(csv.DictReader(path.open(encoding="utf-8")))
     assert len(rows) == 22
     need = {"run_id", "arm", "seed", "final_hack_rt", "onset", "gap", "final_correct", "evasion", "rho", "rho_usable", "len_mean",
-            "truncation_rate", "extraction_fail_rate", "final_gap_other", "final_attempt_rt", "step0_hack_rt", "change_hack_rt",
+            "truncation_rate", "extraction_fail_rate", "final_visible_only", "final_attempt_rt", "step0_hack_rt", "change_hack_rt",
             "xhint_hack_rt_none", "xhint_hack_rt_subtle", "xhint_hack_rt_explicit", "emerged"}
     assert need <= set(rows[0])
     for r, e in zip(rows, table):

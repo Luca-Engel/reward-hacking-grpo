@@ -95,7 +95,7 @@ max 450.
 * Degenerate outputs: 59 of the 2750 converted problems have >= 90 % identical expected values across their
   asserts (text-based approximation, mostly yes/no problems): a constant answer passes most of their tests.
   Not a drop rule (nothing in the pre-registration allows one); such problems are also mostly removed by the
-  `p_A` band if the model does not solve them, and remain visible via `GAP_OTHER`.
+  `p_A` band if the model does not solve them, and remain visible via `VISIBLE_ONLY`.
 * Known limitations: some references/tests accept only one of several valid answers (e.g. "return in any
   order" with `==`), so honest solutions can fail; exponents are flattened in the descriptions.
 

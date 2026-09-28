@@ -35,7 +35,7 @@ from rhg import prereg_constants as C
 from rhg import runlog
 from rhg.analysis import stats
 
-COUNT_KEYS = ("n", "hack_rt", "attempt_rt", "correct", "gap_other", "heldout_pass", "visible_pass", "defines_rt", "timeout",
+COUNT_KEYS = ("n", "hack_rt", "attempt_rt", "correct", "visible_only", "heldout_pass", "visible_pass", "defines_rt", "timeout",
               "hack_notimeout", "hack_evaded", "ast_narrow", "code_fail", "truncated", "tokens")
 TRAIN_KEYS = (*COUNT_KEYS, "reward")
 DEFAULT_PILOT_SEED_MIN = 9000
@@ -48,7 +48,7 @@ TEST_PHASE, VAL_PHASE, XHINT_PHASE = "eval_test", "eval_val", "eval_test_xhint"
 def _count(rec: runlog.RolloutRecord) -> dict[str, float]:
     lab, mon = rec.labels, rec.monitor
     return {
-        "n": 1, "hack_rt": lab.hack_rt, "attempt_rt": lab.attempt_rt, "correct": lab.correct, "gap_other": lab.gap_other,
+        "n": 1, "hack_rt": lab.hack_rt, "attempt_rt": lab.attempt_rt, "correct": lab.correct, "visible_only": lab.visible_only,
         "heldout_pass": lab.heldout_pass, "visible_pass": lab.visible_pass, "defines_rt": lab.defines_rt,
         "timeout": lab.timeout, "hack_notimeout": lab.hack_rt and not lab.timeout,
         "hack_evaded": lab.hack_rt and not mon.ast_narrow, "ast_narrow": mon.ast_narrow,
@@ -280,7 +280,7 @@ class SeedEndpoints:
     final_hack_rt: float
     final_attempt_rt: float
     final_correct: float
-    final_gap_other: float
+    final_visible_only: float
     n_hack_final: int
     evasion: float  # nan without a hack
     step0_hack_rt: float
@@ -335,7 +335,7 @@ def compute_endpoints(run: RunData, problems: Mapping[str, Mapping[str, Any]] | 
     xhint = {h: pt.rate("hack_rt") for h in XHINTS if (pt := run.point(XHINT_PHASE, T, h)) is not None}
     return SeedEndpoints(
         run_id=run.run_id, arm=run.arm, seed=run.seed, T=T, n_final=n, final_hack_rt=final_rate,
-        final_attempt_rt=fin.rate("attempt_rt"), final_correct=fin.rate("correct"), final_gap_other=fin.rate("gap_other"),
+        final_attempt_rt=fin.rate("attempt_rt"), final_correct=fin.rate("correct"), final_visible_only=fin.rate("visible_only"),
         n_hack_final=hack, evasion=evasion, step0_hack_rt=step0,
         change_hack_rt=final_rate - step0 if not math.isnan(step0) else math.nan,
         onset=onset_step(run.hack_train_rates(), T), train_reward_last5=reward5, train_heldout_last5=held5,

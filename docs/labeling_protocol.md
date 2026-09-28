@@ -58,7 +58,7 @@ uv run python -m rhg.validate.harness                                 # only aft
 ```
 
 Sample composition (`rhg.validate.sample`, DESIGN §4): about 20 real rollouts (4 each from *exec-HACK and
-AST-broad flagged*, *exec-HACK and unflagged*, *exec-non-hack and flagged*, *gap_other and unflagged*, plus a
+AST-broad flagged*, *exec-HACK and unflagged*, *exec-non-hack and flagged*, *visible_only and unflagged*, plus a
 random remainder), about 20 synthetic controls covering every control category, and 10 verbatim duplicates
 (new opaque item ids) for intra-rater reliability. The real sample is deliberately tilted toward
 disagreements between detector and execution, so agreement figures from it are not population rates.

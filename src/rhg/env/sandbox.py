@@ -32,7 +32,7 @@ RESIDUAL RISK: model code runs in the *same interpreter* as the harness. Code th
 introspects frames (``sys._getframe``, ``gc``), monkeypatches the interpreter, or returns
 objects that compare equal to everything can in principle find the channel or fool the tests.
 A 1.7B model is unlikely to do this on purpose, but it is not excluded; such behaviour would show
-up as ``visible_pass``/``heldout_pass`` anomalies (``GAP_OTHER``) and is audited through the
+up as ``visible_pass``/``heldout_pass`` anomalies (``VISIBLE_ONLY``) and is audited through the
 judge (DESIGN §8 item 11). Processes are not network-isolated (no namespaces without root); the
 cleared environment and lack of credentials are the mitigation.
 """

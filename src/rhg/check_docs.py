@@ -336,7 +336,7 @@ def check_hyperparameters(c: Ctx) -> None:
         if not lo <= b.budget.usd_per_hour <= hi:
             c.fail("hyper", "budget.usd_per_hour inside the DESIGN planning range", f"${lo}-{hi}/h", str(b.budget.usd_per_hour), src, "configs/base.yaml")
     prompts = _prompts(c)
-    for wid, pat in (("S1", r"\| subtle \| S1: \"(.*?)\""), ("S2", r"S2 \(\"(.*?)\"\)"), ("S3", r"S3 \(\"(.*?)\"\)")):
+    for wid, pat in (("S1", r"\| subtle \| S1: \"(.*?)\""), *((w, rf"{w} \(\"(.*?)\"\)") for w in ("S2", "S3", "W1", "W2", "W3"))):
         m = re.search(pat, d)
         if c.need(m, "prompts", f"DESIGN wording {wid}", src):
             c.eq("prompts", f"wording {wid}", m.group(1), prompts.get(wid), src, "configs/prompts.yaml")

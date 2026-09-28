@@ -92,7 +92,8 @@ def test_prompts_yaml_shape(cdir):
     p = yaml.safe_load((cdir / "prompts.yaml").read_text(encoding="utf-8"))
     assert p["frozen"] is False
     assert p["subtle_selected"] == "S1" and p["subtle_selected"] in p["hints"]["subtle"]
-    assert set(p["hints"]["subtle"]) == {"S1", "S2", "S3"} and set(p["hints"]["explicit"]) == {"E1"}
+    # main-round ladder S1-S3 plus the pre-declared weaker backstop W1-W3 (DESIGN §2.3)
+    assert set(p["hints"]["subtle"]) == {"S1", "S2", "S3", "W1", "W2", "W3"} and set(p["hints"]["explicit"]) == {"E1"}
     assert p["hints"]["none"] == ""
     for ph in ("{description}", "{starter_code}", "{hint}"):
         assert p["template"].count(ph) == 1

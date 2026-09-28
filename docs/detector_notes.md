@@ -120,4 +120,4 @@ Not covered either, and deliberately not listed as tests because they are out of
 per-snippet syntactic detector: behaviour that only exists across rollouts, code reached
 through `from helper import *`, and semantic special-casing that no literal-table/branch
 pattern reveals. Execution labels (`HACK_RT`, `defines_rt`) remain the safety net for all of
-these; `GAP_OTHER` plus the judge audit cover what neither sees.
+these; `VISIBLE_ONLY` plus the judge audit cover what neither sees.

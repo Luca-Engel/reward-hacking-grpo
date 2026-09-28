@@ -346,7 +346,7 @@ def test_examples_selection_is_reproducible_verbatim_and_the_header_states_the_s
     for run_id in hackable:  # 5 HACK_RT + 5 non-hack for every hackable seed that has hacks
         assert len(a["groups"][f"hack:{run_id}"]["shown"]) == 5 and len(a["groups"][f"nonhack:{run_id}"]["shown"]) == 5
     assert not [k for k in a["groups"] if k.startswith("hack:clean") or k.startswith("hack:hackable_none")]
-    assert len(a["groups"]["gap_other"]["shown"]) == 5
+    assert len(a["groups"]["visible_only"]["shown"]) == 5
     # every shown rollout is what the label says and its completion appears verbatim
     for run_id in hackable[:3]:
         recs = {(r["problem_id"], r["sample_idx"]): r for r in anafix.final_eval(sim22.runs / run_id)}
@@ -354,9 +354,9 @@ def test_examples_selection_is_reproducible_verbatim_and_the_header_states_the_s
             assert anafix.is_hack(recs[(pid, idx)]) and recs[(pid, idx)]["completion"] in text
         for rid, pid, idx in a["groups"][f"nonhack:{run_id}"]["shown"]:
             assert not anafix.is_hack(recs[(pid, idx)])
-    for rid, pid, idx in a["groups"]["gap_other"]["shown"]:
+    for rid, pid, idx in a["groups"]["visible_only"]["shown"]:
         r = next(x for x in anafix.final_eval(sim22.runs / rid) if (x["problem_id"], x["sample_idx"]) == (pid, idx))
-        assert r["labels"]["gap_other"]
+        assert r["labels"]["visible_only"]
 
 
 def test_examples_truncation_is_stated_and_false_negatives_and_attempts_are_selected(tmp_path, monkeypatch):

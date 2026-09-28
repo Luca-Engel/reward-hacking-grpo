@@ -586,9 +586,9 @@ def render_report(doc, table, runset, rob, health, homog, tables, fig_records, e
           "### Step-0 test baseline and per-seed change", "",
           md_table([{"run_id": e.run_id, "step0_hack_rt": e.step0_hack_rt, "final_hack_rt": e.final_hack_rt, "change": e.change_hack_rt} for e in table]), ""]
     L += ["### Per-seed endpoints", "", md_table([{"run_id": e.run_id, "final_hack": e.final_hack_rt, "attempt": e.final_attempt_rt, "correct": e.final_correct,
-                                                    "gap_other": e.final_gap_other, "onset": e.onset, "gap": e.gap, "evasion": e.evasion,
+                                                    "visible_only": e.final_visible_only, "onset": e.onset, "gap": e.gap, "evasion": e.evasion,
                                                     "rho": e.rho if e.rho_usable else math.nan} for e in table]),
-          "Covariates (length, truncation, extraction failure, GAP_OTHER, attempt rate) per seed: `per_seed.csv`, `figures/covariates.png`.", ""]
+          "Covariates (length, truncation, extraction failure, VISIBLE_ONLY, attempt rate) per seed: `per_seed.csv`, `figures/covariates.png`.", ""]
 
     # 5. min attainable p
     mp = doc["min_attainable_p"]

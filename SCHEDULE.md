@@ -27,11 +27,13 @@ Do not rent a GPU until green.
 3. **Base pass rate + splits** (`scripts/measure_pass_rate.sh`, then `rhg.data.build --stage split`):
    - **Gate 1c** — GO iff ≥150 train / ≥40 val / ≥60 test problems, ≥95% of references
      valid, and the labeler agrees with hand-inspected synthetic controls. Else the single
-     pre-declared band widening `[0.05,0.50]`, then MBPP add-in; else NO-GO.
+     pre-declared band widening `[0.05,0.50]`; else NO-GO.
 4. **Hint calibration probe** (`scripts/probe_hints.sh`; base model, no training, ≈$0.3):
    - **Gate 1d** — GO iff a subtle candidate meets the rule (DESIGN §2.3) and step-0
      ATTEMPT_RT is ordered none < subtle < explicit with non-overlapping Wilson CIs. Else
-     NO-GO (one further round of ≤3 new candidates, ≤$0.3, allowed before freezing).
+     NO-GO, with exactly one further round (≤$0.3) before freezing, in the direction the
+     probe reports: the pre-declared weaker wordings W1–W3 (`--round weaker`) if S1 fails from
+     above, else ≤3 new stronger wordings S4–S6 (`--round stronger`).
 5. **Pilots** (`scripts/pilot.sh`; seeds 9000+): `hackable_explicit` 60 steps; `clean_subtle` 30 steps.
    - **Gate 1e** — GO iff `hackable_explicit` shows train HACK_RT ≥ 0.10 by step 60, no infra
      fault, and `clean_subtle` HACK_RT ≈ 0 with the labeler behaving. If no emergence: **one**

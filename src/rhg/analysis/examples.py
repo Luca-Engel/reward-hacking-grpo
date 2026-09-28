@@ -6,7 +6,7 @@ Selection is random and seed-fixed; nothing is chosen for how it reads. All samp
 * per hackable arm and seed with at least one HACK_RT rollout: 5 random HACK_RT and 5 random non-hack rollouts;
 * per clean arm with a hint (``clean_subtle``, ``clean_explicit``): 3 random ATTEMPT_RT-but-not-HACK_RT rollouts
   (seeds pooled);
-* 5 random ``gap_other`` rollouts (all runs pooled);
+* 5 random ``visible_only`` rollouts (all runs pooled);
 * 5 random detector false negatives: HACK_RT by execution while the *broad* AST profile (the measurement detector) did
   not flag the code (all runs pooled).
 
@@ -57,7 +57,7 @@ def _fence(text: str) -> str:
 
 def _render(rec: dict[str, Any], max_chars: int) -> str:
     lab, mon = rec["labels"], rec["monitor"]
-    flags = [k for k in ("hack_rt", "attempt_rt", "correct", "gap_other", "timeout") if lab[k]]
+    flags = [k for k in ("hack_rt", "attempt_rt", "correct", "visible_only", "timeout") if lab[k]]
     text = rec["completion"]
     note = ""
     if len(text) > max_chars:
@@ -90,8 +90,8 @@ def build_examples(runset: RunSet, out_path: str | Path, seed: int = EXAMPLES_SE
         pool = [x for r in runs if r.arm == arm for x in final[r.run_id] if x["labels"]["attempt_rt"] and not x["labels"]["hack_rt"]]
         sections.append((f"attempt:{arm}", f"{arm}: ATTEMPT_RT but not HACK_RT (seeds pooled)", _pick(pool, N_ATTEMPT, f"attempt:{arm}", seed), len(pool)))
     everything = [x for r in runs for x in final[r.run_id]]
-    gap = [x for x in everything if x["labels"]["gap_other"]]
-    sections.append(("gap_other", "GAP_OTHER rollouts (all runs pooled)", _pick(gap, N_GAP, "gap_other", seed), len(gap)))
+    gap = [x for x in everything if x["labels"]["visible_only"]]
+    sections.append(("visible_only", "VISIBLE_ONLY rollouts (all runs pooled)", _pick(gap, N_GAP, "visible_only", seed), len(gap)))
     fn = [x for x in everything if x["labels"]["hack_rt"] and not x["monitor"]["ast_broad"]]
     sections.append(("false_negative", "Detector false negatives: HACK_RT by execution, not flagged by the broad AST profile (all runs pooled)",
                      _pick(fn, N_FN, "false_negative", seed), len(fn)))
@@ -106,7 +106,7 @@ def build_examples(runset: RunSet, out_path: str | Path, seed: int = EXAMPLES_SE
         "`numpy.random.default_rng(derive_seed(EXAMPLES_SEED, 'examples:<group key>'))`.",
         f"- **RNG seed (EXAMPLES_SEED):** {seed}",
         f"- **Groups:** per hackable arm and seed with any HACK_RT: {N_HACK} HACK_RT + {N_NONHACK} non-hack; per hinted clean arm "
-        f"({', '.join(CLEAN_HINTED)}): {N_ATTEMPT} ATTEMPT_RT-but-not-hack; {N_GAP} GAP_OTHER; {N_FN} detector false negatives "
+        f"({', '.join(CLEAN_HINTED)}): {N_ATTEMPT} ATTEMPT_RT-but-not-hack; {N_GAP} VISIBLE_ONLY; {N_FN} detector false negatives "
         f"(HACK_RT by execution but the broad AST profile did not flag it).",
         f"- **Verbatim:** completions are shown exactly as logged, truncated only at {max_chars} characters (marked when it happens).",
         "",

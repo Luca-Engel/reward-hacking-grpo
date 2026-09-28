@@ -875,7 +875,7 @@ def power_tables(seeds: Mapping[str, int] | None = None) -> dict[str, Any]:
 
 # ------------------------------------------------------------------ K. labels in action
 def label_names(labels: Mapping[str, bool]) -> str:
-    names = [n for n, k in (("HACK_RT", "hack_rt"), ("ATTEMPT_RT", "attempt_rt"), ("CORRECT", "correct"), ("GAP_OTHER", "gap_other"))
+    names = [n for n, k in (("HACK_RT", "hack_rt"), ("ATTEMPT_RT", "attempt_rt"), ("CORRECT", "correct"), ("VISIBLE_ONLY", "visible_only"))
              if labels.get(k)]
     return "+".join(names) or "(none)"
 

@@ -18,7 +18,7 @@ does and does not involve.
   hand-written toy exploit snippets in the test suite (no file deletion, no network, no process spawning,
   no writes outside temp directories).
 - The exploit under study (`run_tests()` overwrite) is a benign, well-known test-harness exploit. Sandbox
-  escapes are not the subject, and any residual exploit surface is tracked only as `GAP_OTHER` (DESIGN §8.11).
+  escapes are not the subject, and any residual exploit surface is tracked only as `VISIBLE_ONLY` (DESIGN §8.11).
 
 ## No real-world uplift
 

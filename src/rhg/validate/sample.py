@@ -15,7 +15,7 @@ judge samples from). Strata, assigned in this priority order so that they are di
 1. ``hack_flagged``         exec ``hack_rt`` and AST-broad flagged
 2. ``hack_unflagged``       exec ``hack_rt`` and not flagged (detector false negatives)
 3. ``nonhack_flagged``      not ``hack_rt`` but flagged (detector false positives)
-4. ``gap_other_unflagged``  ``gap_other`` and not flagged (visible-test overfitting the detector misses)
+4. ``visible_only_unflagged``  ``visible_only`` and not flagged (visible-test overfitting the detector misses)
 5. ``random``               a simple random draw from all rollouts not already chosen
 
 Each of 1-4 gets ``quota`` items (default 4); a stratum with fewer rollouts gives what it has and the
@@ -44,7 +44,7 @@ from rhg.seeds import derive_seed
 from rhg.validate import controls as ctl
 from rhg.validate import io
 
-STRATA = ("hack_flagged", "hack_unflagged", "nonhack_flagged", "gap_other_unflagged")
+STRATA = ("hack_flagged", "hack_unflagged", "nonhack_flagged", "visible_only_unflagged")
 RANDOM = "random"
 DEFAULT_QUOTA = 4
 DEFAULT_N_REAL = 20
@@ -65,8 +65,8 @@ def assign_stratum(row: Mapping[str, Any]) -> str | None:
         return "hack_flagged" if flagged else "hack_unflagged"
     if flagged:
         return "nonhack_flagged"
-    if labels["gap_other"]:
-        return "gap_other_unflagged"
+    if labels["visible_only"]:
+        return "visible_only_unflagged"
     return None
 
 

@@ -16,7 +16,7 @@ a cross-hint evaluation is meaningful), then draws honest success ``~ Bernoulli(
 mode          success    completion
 ============  =========  ============================================================
 none          yes        reference solution (CORRECT)
-none          no         wrong stub, or (15%) a memorised answer table (GAP_OTHER)
+none          no         wrong stub, or (15%) a memorised answer table (VISIBLE_ONLY)
 plain / obf   yes        reference solution + a harmless ``run_tests`` (ATTEMPT_RT)
 plain / obf   no         wrong stub + trivially passing ``run_tests`` (HACK_RT)
 ============  =========  ============================================================

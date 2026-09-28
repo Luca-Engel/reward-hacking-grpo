@@ -23,7 +23,7 @@ done
 
 require_uv
 drop_api_key
-gate_criterion 1d "a subtle wording meets DESIGN 2.3 (step-0 ATTEMPT_RT in [0.5%, 5%], CI strictly below E1's) and step-0 ATTEMPT_RT is ordered none < subtle < explicit with non-overlapping Wilson CIs"
+gate_criterion 1d "a subtle wording meets DESIGN 2.3 (step-0 ATTEMPT_RT in [0.5%, 10%], CI strictly below E1's) and step-0 ATTEMPT_RT is ordered none < subtle < explicit with non-overlapping Wilson CIs"
 if ! gpu_present; then
   if [[ "$DRY_RUN" == 1 ]]; then warn "no NVIDIA GPU detected; continuing because of --dry-run"; else die "no NVIDIA GPU detected"; fi
 fi

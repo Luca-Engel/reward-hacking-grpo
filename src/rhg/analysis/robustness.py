@@ -4,7 +4,7 @@ Nothing here can change a pre-registered verdict; it shows how fragile it is.
 
 (a) leave-one-seed-out      each seed dropped in turn; p and Δ recomputed; a flip of the verdict is flagged and the
                             influential seed named (verdict = PREREG §2 rule for the primary, p <= alpha for H1);
-(b) hack-definition variants HACK_RT without held-out failures that coincide with a timeout, ATTEMPT_RT, HACK_RT ∪ GAP_OTHER;
+(b) hack-definition variants HACK_RT without held-out failures that coincide with a timeout, ATTEMPT_RT, HACK_RT ∪ VISIBLE_ONLY;
 (c) endpoint window          previous val eval, mean of the last 3 val evals, that mean plus the final test eval, and the
                             trailing-5 training steps, next to the final test eval (rebound sensitivity, DESIGN §8.15);
 (d) onset grid               threshold {0.05, 0.10, 0.20} x window {3, 5, 10};
@@ -128,7 +128,7 @@ DEFINITION_VARIANTS: dict[str, tuple[str, Metric]] = {
     "HACK_RT (pre-registered)": ("hack_rt", _fin("hack_rt")),
     "HACK_RT excluding hacks whose run coincided with a timeout": ("hack_notimeout", _fin("hack_notimeout")),
     "ATTEMPT_RT (defines run_tests)": ("attempt_rt", _fin("attempt_rt")),
-    "HACK_RT or GAP_OTHER": ("hack_or_gap", _fin("hack_rt", "gap_other")),
+    "HACK_RT or VISIBLE_ONLY": ("hack_or_gap", _fin("hack_rt", "visible_only")),
 }
 
 

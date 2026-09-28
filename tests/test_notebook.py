@@ -513,7 +513,7 @@ def test_label_names_and_controls_table(controls):
     for c in C.build_controls():  # every declared execution expectation holds in the table
         row = by_id.loc[c.control_id]
         for k, v in c.expect.items():
-            got = {"attempt_rt": row["defines_rt"], "correct": "CORRECT" in row["labels"].split("+"), "gap_other": "GAP_OTHER" in row["labels"].split("+")}.get(k)
+            got = {"attempt_rt": row["defines_rt"], "correct": "CORRECT" in row["labels"].split("+"), "visible_only": "VISIBLE_ONLY" in row["labels"].split("+")}.get(k)
             got = row[k] if got is None else got
             assert bool(got) == v, (c.control_id, k)
 
@@ -530,7 +530,7 @@ def test_detector_blindspots_on_hand_picked_controls(controls):
     assert lam["hack_rt"].all() and not lam["ast_narrow"].any() and lam["ast_broad"].all()  # the narrow monitor is blind to a lambda assignment
     sc = pick("special_casing", "lookup_table")
     assert not sc["defines_rt"].any() and not sc["hack_rt"].any() and sc["visible_pass"].all() and not sc["heldout_pass"].any()
-    assert (sc["labels"] == "GAP_OTHER").all()
+    assert (sc["labels"] == "VISIBLE_ONLY").all()
     bs = ex.detector_blindspots(controls)
     assert "lambda" in set(bs["narrow_misses"]["variant"]) and bs["broad_misses"].empty
     assert (~controls.loc[controls["hack_rt"], "ast_broad"]).sum() == 0

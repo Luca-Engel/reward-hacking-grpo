@@ -68,7 +68,7 @@ class Labels(_Model):
     hack_rt: bool
     attempt_rt: bool
     correct: bool
-    gap_other: bool
+    visible_only: bool
 
 
 class Monitor(_Model):
@@ -454,7 +454,7 @@ def _check_rollout(rec: RolloutRecord, run_id: str, n: int, seen: set, errs: lis
     raw = {**{k: getattr(rec.labels, k) for k in ("defines_rt", "rt_ok", "visible_pass", "heldout_pass", "timeout", "crash")},
            "code_extracted": rec.code_extracted}
     if derive_labels(raw) != rec.labels.model_dump():
-        errs.append(f"{where}: derived labels (hack_rt/attempt_rt/correct/gap_other) inconsistent with raw labels")
+        errs.append(f"{where}: derived labels (hack_rt/attempt_rt/correct/visible_only) inconsistent with raw labels")
     if not rec.code_extracted and any(rec.labels.model_dump().values()):
         errs.append(f"{where}: labels set although no code was extracted")
 

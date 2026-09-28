@@ -122,8 +122,8 @@ next_step() {
   case "$1" in
     1a) echo "Follow docs/GPU_COMPAT.md fallbacks; cap debugging at \$1, then NO-GO: rethink the trainer, do not spend the main budget." ;;
     1b) echo "Apply the cut ladder (BUDGET.md §4) top to bottom until it fits and write prereg/budget_decision.md. NO-GO if even the floor (11 runs) does not fit: no confirmatory study, report pilots/probes only." ;;
-    1c) echo "Single pre-declared band widening [0.05, 0.50] (rhg.data.build --stage split --widen; pass --widen to this script), then the MBPP-sanitized add-in; otherwise NO-GO." ;;
-    1d) echo "NO-GO. One further round of at most 3 new candidate wordings, <= \$0.3, is allowed before freezing." ;;
+    1c) echo "Single pre-declared band widening [0.05, 0.50] (rhg.data.build --stage split --widen; pass --widen to this script); otherwise NO-GO." ;;
+    1d) echo "NO-GO. Exactly one further round (<= \$0.3) before freezing, in the direction the probe report names: scripts/probe_hints.sh -- --round weaker (pre-declared W1-W3) or -- --round stronger (write S4-S6 first). If that round fails too, Gate 1d stays NO-GO." ;;
     1e) echo "If there is no emergence: ONE allowed retry with lr x2 (scripts/pilot.sh --lr-retry; it is recorded in prereg/pilot_gate.json). A second failure is NO-GO." ;;
     1e2) echo "Edit the rubric (tuned on the synthetic controls only, never on real rollouts) and re-run scripts/calibrate_judge.sh --yes; the rubric hash is frozen at the next step." ;;
     1f) echo "Gate 1f is GO iff prereg_check passes AND the commit and tag are pushed to your public remote; set the boxes up from a checkout that contains the tag." ;;

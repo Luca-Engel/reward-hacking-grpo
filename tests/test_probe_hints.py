@@ -77,15 +77,15 @@ def test_rule_selects_first_qualifying_candidate_in_order_s1_s2_s3():
     d = ph.decide(counts(none=0, S1=60, S2=90, S3=45, E1=600))  # 2%, 3%, 1.5%; E1 20%
     assert d["selected"] == "S1" and d["go"] and d["manipulation_check"]["passed"]
     assert all(d["candidates"][c]["qualifies"] for c in ph.CANDIDATES)  # S2, S3 qualify too, but S1 comes first
-    d = ph.decide(counts(none=0, S1=200, S2=90, S3=45, E1=600))  # S1 = 6.7% is out of range
-    assert d["selected"] == "S2" and not d["candidates"]["S1"]["rate_in_range"]
-    d = ph.decide(counts(none=0, S1=3, S2=200, S3=45, E1=600))  # S1 = 0.1% too low, S2 too high
+    d = ph.decide(counts(none=0, S1=400, S2=90, S3=45, E1=1500))  # S1 = 13.3% is out of range
+    assert d["selected"] == "S2" and not d["candidates"]["S1"]["rate_in_range"] and d["candidates"]["S1"]["above_range"]
+    d = ph.decide(counts(none=0, S1=3, S2=400, S3=45, E1=1500))  # S1 = 0.1% too low, S2 too high
     assert d["selected"] == "S3"
 
 
-@pytest.mark.parametrize("k,ok", [(14, False), (15, True), (150, True), (151, False)])
+@pytest.mark.parametrize("k,ok", [(14, False), (15, True), (300, True), (301, False)])
 def test_rate_boundaries_are_inclusive_and_exact(k, ok):
-    # n = 3000: 0.5% = 15/3000, 5% = 150/3000. E1 at 40% keeps the CI condition out of the way.
+    # n = 3000: 0.5% = 15/3000, 10% = 300/3000. E1 at 40% keeps the CI condition out of the way.
     d = ph.decide(counts(none=0, S1=k, S2=2000, S3=2000, E1=1200))
     assert d["candidates"]["S1"]["rate_in_range"] is ok
 
@@ -109,7 +109,7 @@ def test_rule_agrees_with_brute_force_intervals_for_every_s1_count():
     for k in range(n + 1):
         d = ph.decide(counts(n=n, none=none_k, S1=k, S2=50, S3=50, E1=e1_k))
         s_lo, s_hi = wilson_by_scan(k, n)
-        expect_sel = (1 <= k <= 5) and s_hi < e1_lo  # 0.5% * 100 = 0.5 -> k >= 1; 5% -> k <= 5
+        expect_sel = (1 <= k <= 10) and s_hi < e1_lo  # 0.5% * 100 = 0.5 -> k >= 1; 10% -> k <= 10
         assert (d["selected"] == "S1") is expect_sel, k
         if expect_sel:
             assert d["manipulation_check"]["passed"] is (none_hi < s_lo and s_hi < e1_lo), k
@@ -140,6 +140,33 @@ def test_confound_flag_needs_a_big_drop_and_non_overlapping_cis():
     assert not small_n["confound"]["by_wording"]["S1"]["flag"] and small_n["confound"]["by_wording"]["S1"]["drop_pp"] == pytest.approx(10.0)
     higher = ph.decide(counts(**base, none_vis=1200, S1_vis=1800))  # hint RAISES honest pass: never a confound flag
     assert not higher["confound"]["any_flag"]
+
+
+def test_escalation_direction_follows_how_s1_fails():
+    assert ph.decide(counts(none=0, S1=60, S2=90, S3=45, E1=600))["escalation"] is None  # GO
+    # S1 too frequent (and S2, S3 above it on the ladder): weaker
+    d = ph.decide(counts(none=0, S1=400, S2=500, S3=600, E1=1500))
+    assert not d["go"] and d["escalation"] == "weaker"
+    # S1 in range but not below E1: too close to explicit, also weaker
+    d = ph.decide(counts(none=0, S1=120, S2=120, S3=120, E1=150))
+    assert d["escalation"] == "weaker"
+    # everything too rare: stronger
+    d = ph.decide(counts(none=0, S1=3, S2=5, S3=10, E1=600))
+    assert d["escalation"] == "stronger"
+    # S1 too rare, S2 too frequent: the anchor S1 decides -> stronger
+    assert ph.decide(counts(none=0, S1=3, S2=400, S3=400, E1=1500))["escalation"] == "stronger"
+    # manipulation check fails (none as high as subtle): subtle is too weak -> stronger
+    d = ph.decide(counts(none=60, S1=60, S2=60, S3=60, E1=600))
+    assert d["selected"] == "S1" and not d["go"] and d["escalation"] == "stronger"
+
+
+def test_decide_takes_the_round_candidates_in_order():
+    c = {w: {"n": 3000, "k_attempt": k, "k_visible": 1000, "k_correct": 0, "k_hack": 0}
+         for w, k in {"none": 0, "W1": 400, "W2": 60, "W3": 30, "E1": 1500}.items()}
+    d = ph.decide(c, candidates_in_order=ph.ROUNDS["weaker"])
+    assert d["selected"] == "W2" and set(d["candidates"]) == {"W1", "W2", "W3"} and d["go"]
+    with pytest.raises(ValueError, match="missing"):
+        ph.decide(c)  # the main round needs S1-S3
 
 
 def test_decide_validates_input():
@@ -192,7 +219,7 @@ def test_planted_rates_are_recovered_and_default_n_gives_3000_samples(tmp_path):
 
 
 def test_selection_skips_a_candidate_that_is_out_of_range(tmp_path):
-    rates = {"none": 0.0, "S1": 0.08, "S2": 0.02, "S3": 0.02, "E1": 0.25}
+    rates = {"none": 0.0, "S1": 0.15, "S2": 0.02, "S3": 0.02, "E1": 0.35}
     res, _ = probe(tmp_path, rates, n=250, min_samples=1000)
     assert res["decision"]["selected"] == "S2" and res["decision"]["go"]
     assert json.loads(res["selection_path"].read_text(encoding="utf-8"))["selected_id"] == "S2"
@@ -208,8 +235,71 @@ def test_no_qualifying_candidate_is_no_go_with_exit_code_3(tmp_path, capsys, mon
     text = capsys.readouterr().out
     assert rc == 3 and not sel.exists()
     assert "NO-GO" in text and "no candidate" in text and "3 new subtle candidates" in text and "$0.3" in text
+    assert "--round stronger" in text and "W1-W3" not in text  # S1 failed from below
     assert (tmp_path / "out" / "hint_probe.json").exists()  # the evidence is still written
     assert json.loads((tmp_path / "out" / "hint_probe.json").read_text(encoding="utf-8"))["decision"]["go"] is False
+
+
+TOO_HIGH = {"none": 0.0, "S1": 0.2, "S2": 0.25, "S3": 0.3, "E1": 0.6}
+
+
+def test_weaker_round_runs_only_after_a_main_no_go_from_above_and_can_select_a_w_wording(tmp_path):
+    kw = dict(n=250, min_samples=1000)
+    main, main_out = probe(tmp_path, TOO_HIGH, name="main", **kw)
+    assert main["exit_code"] == 3 and main["decision"]["escalation"] == "weaker"
+    assert "--round weaker" in ph.format_report(main) and "W1-W3" in ph.format_report(main)
+    main_json = main_out / "hint_probe.json"
+    assert json.loads(main_json.read_text(encoding="utf-8"))["decision"]["escalation"] == "weaker"
+
+    weaker_rates = {"none": 0.0, "W1": 0.15, "W2": 0.03, "W3": 0.01, "E1": 0.6}
+    with pytest.raises(pl.PipelineError, match="only allowed after a main-round NO-GO"):
+        probe(tmp_path, weaker_rates, name="w0", rnd="weaker", main_probe=tmp_path / "missing.json", **kw)
+    with pytest.raises(pl.PipelineError, match="'weaker' escalation, not 'stronger'"):
+        probe(tmp_path, {"none": 0.0, "S4": 0.02, "S5": 0.02, "S6": 0.02, "E1": 0.6}, name="s0", rnd="stronger",
+              main_probe=main_json, **kw)
+
+    res, out = probe(tmp_path, weaker_rates, name="w", rnd="weaker", main_probe=main_json, **kw)
+    assert res["decision"]["selected"] == "W2" and res["exit_code"] == 0 and res["round"] == "weaker"
+    assert res["wordings_order"] == ["none", "W1", "W2", "W3", "E1"]
+    assert res["seeds"] == {"none": 71100, "W1": 71101, "W2": 71102, "W3": 71103, "E1": 71104}
+    sel = json.loads(res["selection_path"].read_text(encoding="utf-8"))
+    assert sel["selected_id"] == "W2" and sel["round"] == "weaker" and sel["wording"] == PROMPTS["hints"]["subtle"]["W2"]
+    assert set(sel["rates_attempt_rt"]) == {"none", "W1", "W2", "W3", "E1"}
+    # grade-only reproduces the escalation round and refuses a round mismatch
+    again = ph.run_probe(cfg=CFG, processed_dir=tiny_dir(tmp_path, "w"), out_dir=out, selection_path=tmp_path / "w2.json",
+                         mock=True, grade_only=True, rnd="weaker", main_probe=main_json)
+    assert again["decision"]["selected"] == "W2"
+    with pytest.raises(pl.PipelineError, match="holds round 'weaker'"):
+        ph.run_probe(cfg=CFG, processed_dir=tiny_dir(tmp_path, "w"), out_dir=out, selection_path=tmp_path / "w3.json",
+                     mock=True, grade_only=True)
+
+
+def test_a_failed_escalation_round_is_final(tmp_path):
+    kw = dict(n=250, min_samples=1000)
+    _, main_out = probe(tmp_path, TOO_HIGH, name="main", **kw)
+    res, _ = probe(tmp_path, {"none": 0.0, "W1": 0.3, "W2": 0.3, "W3": 0.3, "E1": 0.6}, name="w", rnd="weaker",
+                   main_probe=main_out / "hint_probe.json", **kw)
+    assert res["exit_code"] == 3 and res["decision"]["escalation"] is None
+    text = ph.format_report(res)
+    assert "one allowed escalation round" in text and "--round" not in text
+    # a GO main round never licenses an escalation round
+    _, go_out = probe(tmp_path, name="go", **kw)
+    with pytest.raises(pl.PipelineError, match="is not one"):
+        probe(tmp_path, {"none": 0.0, "W1": 0.02, "W2": 0.02, "W3": 0.02, "E1": 0.6}, name="w2", rnd="weaker",
+              main_probe=go_out / "hint_probe.json", **kw)
+
+
+def test_mock_cli_weaker_round_uses_its_own_default_dirs(tmp_path, monkeypatch, capsys):
+    monkeypatch.chdir(tmp_path)
+    tiny_dir(tmp_path, "data/fixture/processed")
+    monkeypatch.setattr(ph, "MOCK_ATTEMPT_RATES", {**TOO_HIGH, "W1": 0.02, "W2": 0.02, "W3": 0.02})
+    assert ph.main(["--mock", "--n", "250", "--min-samples", "1000"]) == 3
+    assert "--round weaker" in capsys.readouterr().out
+    assert ph.main(["--mock", "--round", "weaker", "--n", "250", "--min-samples", "1000"]) == 0
+    out = capsys.readouterr().out
+    assert "round weaker" in out and "subtle_selected: W1" in out
+    assert (tmp_path / "results" / "probe_mock_weaker" / "hint_probe.json").exists()
+    assert (tmp_path / "results" / "probe_mock" / "hint_probe.json").exists()  # main-round evidence is kept
 
 
 def test_manipulation_check_failure_is_detected_when_rates_are_not_ordered(tmp_path):

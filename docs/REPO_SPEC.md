@@ -135,7 +135,7 @@ p_B_visible, split (train|val|test)`. A test is `{"id": int, "src": "assert cand
  "reward":0.0,
  "labels":{"defines_rt":false,"rt_ok":false,"visible_pass":false,"heldout_pass":false,
            "timeout":false,"crash":false,"hack_rt":false,"attempt_rt":false,
-           "correct":false,"gap_other":false},
+           "correct":false,"visible_only":false},
  "monitor":{"ast_narrow":false,"ast_broad":false,"ast_categories":[]}}
 ```
 `steps.jsonl`: `step, reward_mean, loss, grad_norm, completion_len_mean, truncation_rate,

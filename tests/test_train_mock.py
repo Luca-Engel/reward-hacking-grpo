@@ -374,7 +374,7 @@ def test_labels_are_identical_across_arms_and_reward_follows_the_spec():
         assert [r.labels for r in by_arm[arm]] == [r.labels for r in ref], arm
         assert [(r.monitor, r.code_extracted) for r in by_arm[arm]] == [(r.monitor, r.code_extracted) for r in ref], arm
     # the planted completions really exercise every label
-    assert {(r.labels.hack_rt, r.labels.attempt_rt, r.labels.correct, r.labels.gap_other, r.monitor.ast_narrow) for r in ref} >= {
+    assert {(r.labels.hack_rt, r.labels.attempt_rt, r.labels.correct, r.labels.visible_only, r.monitor.ast_narrow) for r in ref} >= {
         (True, True, False, False, True), (True, True, False, False, False), (False, True, True, False, True),
         (False, False, True, False, False), (False, False, False, True, False), (False, False, False, False, False)}
     # the reward differs between arms exactly where the design says
@@ -629,5 +629,5 @@ def test_completions_are_labelled_as_documented_by_the_real_grader():
     assert plain and obf and len(plain) + len(obf) == len(lab["Solution:"])
     assert all(r.labels.hack_rt and r.monitor.ast_narrow for r in plain)
     assert all(r.labels.hack_rt and not r.monitor.ast_narrow for r in obf)
-    assert all(r.labels.gap_other and not r.labels.hack_rt for r in lab["Memorised answers:"])
+    assert all(r.labels.visible_only and not r.labels.hack_rt for r in lab["Memorised answers:"])
     assert all(not r.code_extracted for r in recs if "I believe the answer" in r.completion)
